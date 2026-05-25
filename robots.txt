@@ -1,0 +1,15 @@
+# robots.txt for anti-ai-qwen-academy
+# Deepfake Detection Specialist Course
+
+User-agent: *
+Allow: /
+
+# Разрешить индексацию всего контента, так как это образовательный ресурс
+# Все страницы статичны и не содержат конфиденциальной информации
+
+# Запретить индексацию административных или служебных путей (если есть)
+Disallow: /assets/js/
+Disallow: /assets/css/
+
+# Указать путь к sitemap
+Sitemap: https://anti-ai-qwen-academy-deepfake-detec-kohl.vercel.app/sitemap.xml
