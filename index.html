@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  
+  <!-- 🔹 Production-ready CSP с поддержкой Speech Synthesis -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' ws: wss:; media-src 'self' blob:;">
+  
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  
+  <!-- 🔹 Логотип -->
+  <link rel="icon" href="favicon.ico" type="image/x-icon">
+  <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+  
+  <title>anti-ai-qwen-academy • Deepfake Detection Specialist</title>
+  
+  <style>
+    :root {
+      --bg: #0a0c14; --surface: rgba(20,24,36,0.95); --glass: rgba(255,255,255,0.06);
+      --text: #e6eaf0; --muted: #8a92a6;
+      --accent: #00d4ff; --qwen: #615ef0; --qwen-glow: rgba(97,94,240,0.3);
+      --success: #2ecc71; --warning: #f39c12; --danger: #e74c3c; --gold: #ffd700;
+      --font: system-ui, -apple-system, "Segoe UI", monospace;
+      --radius: 14px; --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: var(--bg); color: var(--text); font-family: var(--font); min-height: 100vh; display: flex; justify-content: center; padding: 16px; }
+    button, .btn, .tab-btn { user-select: none; -webkit-tap-highlight-color: transparent; }
+    .code-block, .lesson-content, .cert-id, .lib-item p, .lesson-input, .case-text { user-select: text; }
+    
+    #app { width: 100%; max-width: 860px; background: var(--surface); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.12); border-radius: var(--radius); box-shadow: 0 12px 40px rgba(0,0,0,0.6); padding: 20px; display: flex; flex-direction: column; gap: 16px; position: relative; overflow: hidden; }
+    #app::before { content: ''; position: absolute; top: -30%; left: -20%; width: 140%; height: 140%; background: radial-gradient(circle at 20% 20%, var(--qwen-glow), transparent 50%), radial-gradient(circle at 80% 80%, rgba(0,212,255,0.08), transparent 50%); pointer-events: none; z-index: 0; }
+
+    .hero-section { text-align: center; padding: 10px 0 16px; border-bottom: 1px solid rgba(255,255,255,0.08); }
+    
+    /* 🔹 Логотип */
+    .logo-row { display:flex; align-items:center; justify-content:center; gap:14px; margin-bottom:10px; flex-wrap:wrap; }
+    .logo-img { width:52px; height:52px; object-fit:contain; border-radius:8px; border:1px solid rgba(97,94,240,0.3); flex-shrink:0; }
+    .logo-fallback { display:none; align-items:center; justify-content:center; width:52px; height:52px; background:linear-gradient(135deg, var(--qwen), var(--accent)); border-radius:8px; font-size:1.5rem; font-weight:bold; color:#fff; flex-shrink:0; border:1px solid rgba(97,94,240,0.4); }
+    .logo-fallback svg { width:32px; height:32px; }
+    
+    .hero-img { max-width: 100%; height: auto; border-radius: 12px; margin: 12px 0; border: 1px solid rgba(97,94,240,0.3); }
+    .hero-fallback { padding: 20px; background: linear-gradient(135deg, rgba(97,94,240,0.15), rgba(0,212,255,0.1)); border-radius: 12px; margin: 12px 0; border: 2px dashed var(--qwen); text-align: center; }
+    .badge-qwen { display: inline-block; padding: 6px 16px; background: linear-gradient(135deg, var(--qwen), #8a85f5); color: #fff; border-radius: 20px; font-weight: bold; margin: 8px 4px; font-size: 0.85rem; }
+    .badge-gold { display: inline-block; padding: 6px 16px; background: linear-gradient(135deg, var(--gold), #ffed4e); color: #000; border-radius: 20px; font-weight: bold; margin: 8px 4px; font-size: 0.85rem; }
+    .update-indicator { display: inline-flex; align-items: center; gap: 6px; font-size: 0.75rem; color: var(--success); margin-top: 8px; }
+    .update-indicator.live::before { content: ''; width: 8px; height: 8px; background: var(--success); border-radius: 50%; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+    .concept-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 12px; }
+    .concept-card { background: rgba(0,0,0,0.3); border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); transition: var(--transition); }
+    .concept-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px var(--qwen-glow); border-color: var(--qwen); }
+    .concept-card img { width: 100%; height: 120px; object-fit: cover; display: block; }
+    .concept-icon { width: 100%; height: 120px; background: linear-gradient(135deg, rgba(97,94,240,0.2), rgba(0,212,255,0.15)); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+    .concept-caption { padding: 10px; font-size: 0.8rem; color: var(--muted); text-align: center; font-weight: 600; }
+
+    h1 { font-size: 1.2rem; display: flex; align-items: center; gap: 8px; justify-content: center; flex-wrap: wrap; margin: 0; }
+    h1 .brand { color: var(--qwen) !important; font-weight: 700; }
+    h1 .sep { color: var(--muted) !important; margin: 0 6px; }
+    h1 .spec { color: var(--text) !important; }
+    
+    .hdr-actions { display: flex; gap: 8px; justify-content: center; margin-top: 12px; }
+    #langBtn, #guideBtn, #voiceBtn { background: var(--glass); border: 1px solid rgba(255,255,255,0.2); padding: 6px 10px; border-radius: 8px; color: var(--text); cursor: pointer; font-weight: bold; transition: var(--transition); font-size: 0.8rem; }
+    #langBtn:hover, #guideBtn:hover, #voiceBtn:hover { border-color: var(--qwen); box-shadow: 0 0 15px var(--qwen-glow); }
+    #voiceBtn.active { background: rgba(97,94,240,0.2); border-color: var(--qwen); color: var(--qwen); }
+
+    .tabs { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 8px; }
+    .tab-btn { flex: 1; padding: 10px; background: var(--glass); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; color: var(--muted); font-weight: 600; cursor: pointer; transition: var(--transition); white-space: nowrap; }
+    .tab-btn.active { background: rgba(97,94,240,0.15); border-color: var(--qwen); color: var(--qwen); box-shadow: 0 0 20px var(--qwen-glow); }
+
+    .tab-content { display: none; flex-direction: column; gap: 12px; max-height: 60vh; overflow-y: auto; padding-right: 4px; }
+    .tab-content.active { display: flex; }
+    .tab-content::-webkit-scrollbar { width: 6px; }
+    .tab-content::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 3px; }
+
+    .card { background: rgba(0,0,0,0.35); padding: 14px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.08); transition: var(--transition); }
+    .card h3 { color: var(--gold); margin-bottom: 6px; font-size: 0.9rem; }
+    .card p, .card li { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .card ul, .card ol { padding-left: 18px; margin-top: 4px; }
+
+    .tag { display: inline-block; padding: 3px 10px; border-radius: 12px; font-size: 0.75rem; margin: 2px; }
+    .tag-qwen { background: rgba(97,94,240,0.2); border: 1px solid var(--qwen); color: var(--qwen); }
+    .tag-green { background: rgba(46,204,113,0.2); border: 1px solid var(--success); color: var(--success); }
+    .tag-blue { background: rgba(0,212,255,0.2); border: 1px solid var(--accent); color: var(--accent); }
+
+    .lesson-card { background: rgba(255,255,255,0.03); padding: 14px; border-radius: 10px; margin: 8px 0; border-left: 3px solid var(--muted); transition: var(--transition); }
+    .lesson-card.locked { opacity: 0.4; pointer-events: none; filter: grayscale(0.8); }
+    .lesson-card.active { border-left-color: var(--qwen); }
+    .lesson-card.completed { border-left-color: var(--success); opacity: 0.7; }
+    .lesson-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+    .lesson-title { font-weight: bold; color: var(--qwen); font-size: 0.95rem; }
+    .lesson-status { padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: bold; }
+    .lesson-status.locked { background: rgba(255,255,255,0.1); color: var(--muted); }
+    .lesson-status.active { background: rgba(97,94,240,0.2); color: var(--qwen); }
+    .lesson-status.completed { background: rgba(46,204,113,0.2); color: var(--success); }
+    .lesson-content { font-size: 0.85rem; color: var(--muted); margin-bottom: 10px; }
+    .case-text { background: rgba(0,0,0,0.5); padding: 10px; border-radius: 6px; font-size: 0.85rem; margin: 8px 0; border-left: 3px solid var(--accent); white-space: pre-wrap; }
+    .lesson-task { background: rgba(97,94,240,0.08); padding: 10px; border-radius: 8px; margin: 8px 0; font-size: 0.8rem; border: 1px solid rgba(97,94,240,0.2); }
+    .qwen-format { background: rgba(0,212,255,0.08); padding: 8px; border-radius: 6px; margin: 8px 0; font-size: 0.75rem; font-family: monospace; border: 1px dashed var(--accent); color: var(--accent); }
+    .lesson-input { width: 100%; padding: 10px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: var(--text); margin: 8px 0; font-family: var(--font); min-height: 80px; resize: vertical; }
+    .lesson-input:focus { border-color: var(--qwen); box-shadow: 0 0 0 2px var(--qwen-glow); }
+    .lesson-feedback { margin-top: 8px; padding: 10px; border-radius: 6px; font-size: 0.82rem; display: none; }
+    .lesson-feedback.success { background: rgba(46,204,113,0.1); border: 1px solid var(--success); color: var(--success); }
+    .lesson-feedback.error { background: rgba(231,76,60,0.1); border: 1px solid var(--danger); color: #ff8a8a; }
+
+    .exam-question { margin: 16px 0; padding: 14px; background: rgba(0,0,0,0.3); border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); }
+    .exam-question.answered { border-color: var(--qwen); }
+    .exam-options label { display: block; margin: 6px 0; padding: 8px; background: rgba(255,255,255,0.03); border-radius: 6px; cursor: pointer; }
+    .exam-options label:hover { background: rgba(255,255,255,0.08); }
+    .exam-options input[type="radio"] { margin-right: 8px; accent-color: var(--qwen); }
+
+    .certificate { background: linear-gradient(135deg, rgba(97,94,240,0.15), rgba(0,212,255,0.15)); border: 3px solid var(--qwen); border-radius: 16px; padding: 30px; text-align: center; margin: 12px 0; position: relative; overflow: hidden; box-shadow: 0 0 40px var(--qwen-glow); }
+    .certificate::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(97,94,240,0.03) 10px, rgba(97,94,240,0.03) 20px); animation: shimmer 3s linear infinite; }
+    @keyframes shimmer { 0%{transform:translate(-50%,-50%)} 100%{transform:translate(0,0)} }
+    .certificate-content { position: relative; z-index: 1; }
+    .certificate h3 { color: var(--qwen); margin-bottom: 12px; font-size: 1.5rem; }
+    .certificate p { font-size: 0.9rem; color: var(--text); margin: 6px 0; }
+    .cert-badge { display: inline-block; padding: 6px 16px; background: linear-gradient(135deg, var(--qwen), #8a85f5); color: #fff; border-radius: 25px; font-weight: bold; margin: 12px 0; box-shadow: 0 4px 15px var(--qwen-glow); }
+    .cert-id { font-family: monospace; background: rgba(0,0,0,0.3); padding: 4px 12px; border-radius: 6px; color: var(--qwen); display: inline-block; margin: 8px 0; }
+    .cert-seal { width: 80px; height: 80px; border: 3px solid var(--qwen); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 16px auto; background: rgba(97,94,240,0.1); font-size: 2rem; box-shadow: 0 0 20px var(--qwen-glow); }
+    .cert-validator { margin-top: 16px; padding: 12px; background: rgba(0,0,0,0.2); border-radius: 8px; text-align: left; }
+    .cert-validator input { width: 100%; padding: 8px; margin: 8px 0; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; color: var(--text); font-family: monospace; }
+
+    .pipeline-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin: 12px 0; }
+    .pipeline-card { background: rgba(97,94,240,0.08); padding: 12px; border-radius: 10px; border: 1px solid rgba(97,94,240,0.2); }
+    .pipeline-card h4 { color: var(--qwen); margin-bottom: 6px; font-size: 0.85rem; }
+    .pipeline-card p { font-size: 0.75rem; color: var(--muted); line-height: 1.4; }
+    .pipeline-card .fmt { font-family: monospace; font-size: 0.7rem; background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; color: var(--accent); }
+
+    .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin: 12px 0; }
+    .skill-card { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; border-left: 3px solid var(--accent); }
+    .skill-card h4 { color: var(--gold); margin-bottom: 8px; font-size: 0.9rem; }
+    .skill-card li { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+
+    .warning-box { background: rgba(243,156,18,0.1); border-left: 4px solid var(--warning); padding: 12px; border-radius: 0 8px 8px 0; margin: 12px 0; font-size: 0.8rem; }
+    .warning-box strong { color: var(--warning); }
+
+    .collab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin: 12px 0; }
+    .collab-card { padding: 10px; border-radius: 8px; font-size: 0.8rem; }
+    .collab-card.green { background: rgba(46,204,113,0.1); border: 1px solid var(--success); }
+    .collab-card.yellow { background: rgba(243,156,18,0.1); border: 1px solid var(--warning); }
+    .collab-card.orange { background: rgba(230,126,34,0.1); border: 1px solid #e67e22; }
+    .collab-card.blue { background: rgba(0,212,255,0.1); border: 1px solid var(--accent); }
+    .collab-card h4 { margin-bottom: 4px; }
+    .collab-card p { font-size: 0.75rem; color: var(--muted); }
+
+    input, textarea, select { width: 100%; padding: 10px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; color: var(--text); font-family: var(--font); outline: none; }
+    input:focus, textarea:focus { border-color: var(--qwen); box-shadow: 0 0 0 2px var(--qwen-glow); }
+
+    .btn { padding: 10px 14px; background: linear-gradient(135deg, var(--qwen), #8a85f5); color: #fff; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: var(--transition); box-shadow: 0 4px 15px var(--qwen-glow); }
+    .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px var(--qwen-glow); }
+    .btn.secondary { background: var(--glass); color: var(--text); border: 1px solid rgba(255,255,255,0.2); box-shadow: none; }
+    .btn.danger { background: linear-gradient(135deg, var(--danger), #c0392b); color: #fff; }
+    .btn-group { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+    .skill-item { margin: 10px 0; }
+    .skill-label { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 4px; }
+    .skill-bar { height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; }
+    .skill-fill { height: 100%; background: linear-gradient(90deg, var(--qwen), var(--accent)); width: 0%; transition: width 0.8s ease; }
+
+    .support { text-align: center; padding: 14px; background: linear-gradient(135deg, rgba(97,94,240,0.1), rgba(0,212,255,0.1)); border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); margin-top: auto; }
+    .support h3 { color: var(--qwen); margin-bottom: 8px; }
+    .support p { font-size: 0.85rem; color: var(--muted); margin-bottom: 6px; }
+    footer { text-align: center; color: var(--muted); font-size: 0.7rem; padding-top: 10px; border-top: 1px solid rgba(255,255,255,0.08); margin-top: 8px; }
+
+    .modal { position: fixed; inset: 0; background: rgba(2,2,8,0.92); backdrop-filter: blur(8px); display: none; justify-content: center; align-items: center; z-index: 100; padding: 20px; }
+    .modal.open { display: flex; }
+    .modal-content { background: var(--surface); padding: 24px; border-radius: 16px; border: 1px solid rgba(97,94,240,0.3); max-width: 500px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; }
+    .modal-close { position: absolute; top: 12px; right: 12px; background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; }
+
+    .materials-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; margin: 12px 0; }
+    .material-item { background: rgba(255,255,255,0.03); padding: 10px; border-radius: 8px; border-left: 3px solid var(--qwen); }
+    .material-item h4 { color: var(--qwen); font-size: 0.85rem; margin-bottom: 4px; }
+    .material-item p { font-size: 0.75rem; color: var(--muted); }
+    .material-item .fmt { font-family: monospace; font-size: 0.7rem; color: var(--accent); background: rgba(0,0,0,0.3); padding: 2px 6px; border-radius: 4px; }
+
+    @media(max-width:480px) {
+      #app { padding: 14px; } h1 { font-size: 1rem; }
+      .logo-img, .logo-fallback { width:40px; height:40px; }
+      .tab-btn { padding: 8px; font-size: 0.75rem; } .card { padding: 10px; }
+      .btn { padding: 8px 10px; font-size: 0.8rem; }
+      .concept-grid { grid-template-columns: 1fr 1fr; }
+      .pipeline-grid { grid-template-columns: 1fr; }
+      .certificate { padding: 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<main id="app">
+  <div class="hero-section">
+    <!-- 🔹 ВИДИМЫЙ ЛОГОТИП + ТЕКСТ -->
+    <div class="logo-row">
+      <img src="favicon.ico" alt="anti-ai-qwen-academy" class="logo-img"
+           onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+      <div class="logo-fallback" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+        </svg>
+      </div>
+      <h1>
+        <span class="brand">anti-ai-qwen-academy</span>
+        <span class="sep">•</span>
+        <span class="spec">Deepfake Detection Specialist</span>
+      </h1>
+    </div>
+    
+    <p style="font-size:0.85rem; color:var(--muted); margin-top:4px;" data-i18n="hero_subtitle">
+      Qwen (Tongyi Qianwen) • 100% Offline • 10 days
+    </p>
+    
+    <img src="assets/images/hero-deepfake.png" alt="Deepfake Detection" class="hero-img" 
+         onerror="this.style.display='none'; this.nextElementSibling.style.display='block'">
+    <div class="hero-fallback" style="display:none;">
+      <p style="font-size:3rem; margin-bottom:8px;">🤖️</p>
+      <p style="color:var(--qwen); font-weight:bold; font-size:1.1rem;" data-i18n="qwen_title">
+        Anti-AI Qwen Academy: Deepfake Specialist
+      </p>
+      <p style="font-size:0.8rem; margin-top:8px;">
+        🎓 10 days • 💼 Qwen Pipelines • 🔐 Offline • 📊 RLHF & Safety
+      </p>
+    </div>
+
+    <div style="margin:12px 0;">
+      <span class="badge-qwen">🛡️ Safety</span>
+      <span class="badge-qwen">👁️ VL/Audio</span>
+      <span class="badge-qwen">📝 RLHF</span>
+      <span class="badge-gold">💼 $500-2000/mo</span>
+    </div>
+
+    <div class="hdr-actions">
+      <button id="guideBtn" onclick="app.openModal('guideModal')">📖 <span data-i18n="guide_btn">10-Day Plan</span></button>
+      <button id="voiceBtn" onclick="app.toggleVoice()">🔇</button>
+      <button id="langBtn" onclick="app.toggleLang()">🌐 EN</button>
+    </div>
+  </div>
+
+  <div class="concept-grid">
+    <div class="concept-card">
+      <img src="assets/images/visual-artifacts.png" alt="Visual Artifacts" onerror="this.parentElement.innerHTML='<div class=\'concept-icon\'>👁️</div><div class=\'concept-caption\'>Visual Artifacts</div>'">
+      <div class="concept-caption" data-i18n="concept1">👁️ Visual Artifacts</div>
+    </div>
+    <div class="concept-card">
+      <img src="assets/images/audio-spectrogram.png" alt="Audio Synth" onerror="this.parentElement.innerHTML='<div class=\'concept-icon\'>🔊</div><div class=\'concept-caption\'>Audio Synth</div>'">
+      <div class="concept-caption" data-i18n="concept2">🔊 Audio Synth</div>
+    </div>
+    <div class="concept-card">
+      <img src="assets/images/data-pipeline.png" alt="Data Curation" onerror="this.parentElement.innerHTML='<div class=\'concept-icon\'>📊</div><div class=\'concept-caption\'>Data Curation</div>'">
+      <div class="concept-caption" data-i18n="concept3">📊 Data Curation</div>
+    </div>
+    <div class="concept-card">
+      <img src="assets/images/safety-shield.png" alt="Safety Eval" onerror="this.parentElement.innerHTML='<div class=\'concept-icon\'>🛡️</div><div class=\'concept-caption\'>Safety Eval</div>'">
+      <div class="concept-caption" data-i18n="concept4">🛡️ Safety Eval</div>
+    </div>
+  </div>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="course" data-i18n="tab_course">🎓 Course</button>
+    <button class="tab-btn" data-tab="practice" data-i18n="tab_practice">🛡️ Practice</button>
+    <button class="tab-btn" data-tab="library" data-i18n="tab_library">📚 Library</button>
+    <button class="tab-btn" data-tab="progress" data-i18n="tab_progress">📅 Progress</button>
+  </nav>
+
+  <!-- 🎓 COURSE -->
+  <section id="course" class="tab-content active">
+    <div class="card" style="border: 2px solid var(--qwen); background: linear-gradient(135deg, rgba(97,94,240,0.1), rgba(0,212,255,0.1));">
+      <h3 style="color: var(--qwen); text-align: center;" data-i18n="cert_conditions">🏆 CERTIFICATE REQUIREMENTS</h3>
+      <div style="display: flex; justify-content: center; gap: 16px; margin: 12px 0; flex-wrap: wrap;">
+        <div style="text-align: center;"><div style="font-size: 2rem;">📚</div><b>10/10 lessons</b><br><span style="font-size: 0.8rem; color: var(--muted);" data-i18n="cond1_sub">Deepfake + Qwen formats</span></div>
+        <div style="text-align: center;"><div style="font-size: 2rem;">🧠</div><b>10/10 exam</b><br><span style="font-size: 0.8rem; color: var(--muted);" data-i18n="cond2_sub">No mistakes</span></div>
+        <div style="text-align: center;"><div style="font-size: 2rem;">📁</div><b data-i18n="cond3">Portfolio</b><br><span style="font-size: 0.8rem; color: var(--muted);" data-i18n="cond3_sub">5 cases in Qwen formats</span></div>
+      </div>
+      <p style="text-align: center; font-size: 0.85rem; color: var(--muted);" data-i18n="cert_warning">⚠️ Perfect results → Contributor Pipeline access</p>
+    </div>
+
+    <div class="card">
+      <h3 data-i18n="progress_title">📊 Progress</h3>
+      <div class="skill-item">
+        <div class="skill-label"><span data-i18n="lessons_done">Lessons completed</span><span id="courseProgress">0/10</span></div>
+        <div class="skill-bar"><div class="skill-fill" id="courseBar" style="width:0%"></div></div>
+      </div>
+      <div style="margin-top:12px; text-align:center; border-top:1px solid rgba(255,255,255,0.1); padding-top:12px;">
+        <button class="btn danger" onclick="app.resetProgress()" style="font-size:0.8rem; width:100%;" data-i18n="reset_btn">🔄 Reset</button>
+        <p style="font-size:0.7rem; color:var(--muted); margin-top:6px;" data-i18n="reset_warning">⚠️ All data will be deleted</p>
+      </div>
+    </div>
+
+    <div id="lessonsContainer"></div>
+    <div id="examContainer"></div>
+
+    <!-- CERTIFICATE -->
+    <div class="certificate" id="certificateBox" style="display:none;">
+      <div class="certificate-content">
+        <div class="cert-seal">🛡️</div>
+        <h3 data-i18n="cert_heading">🎓 CERTIFICATE</h3>
+        <p style="font-size:1rem; margin:8px 0; color:var(--qwen);">
+          <b data-i18n="cert_course">Course: <span id="certCourseDisplay">Qwen Deepfake Detection Specialist</span></b>
+        </p>
+        <p data-i18n="cert_confirms">This certifies that</p>
+        <p style="font-size:1.2rem; color:var(--gold); margin:8px 0; font-weight:bold;" data-i18n="cert_who">Certified Deepfake Detection Specialist</p>
+        <p data-i18n="cert_completed">has successfully completed the synthetic content verification course for Qwen pipelines</p>
+        <div class="cert-id" id="certIdDisplay">QWEN-DEEPFAKE-XXXXXX</div>
+        <p style="font-size:0.8rem; color:var(--muted); margin-top:8px;">
+          <span data-i18n="cert_issuer">Issuer:</span> <span id="certIssuerDisplay">Anti-AI Qwen Academy</span>
+        </p>
+        <p style="font-size:0.8rem; color:var(--muted); margin-top:4px;">
+          <span data-i18n="cert_pipeline">Pipeline:</span> <span id="certPipelineDisplay">qwen-multimodal-safety</span>
+        </p>
+        <p style="font-size:0.8rem; color:var(--muted); margin-top:4px;">
+          <span data-i18n="cert_compliance">Compliance:</span> <span id="certComplianceDisplay">tongyi_safety_v2, iso_iec_42001</span>
+        </p>
+        <p style="font-size:0.8rem; color:var(--muted); margin-top:4px;" data-i18n="cert_date_label">Date: <span id="certDateDisplay"></span></p>
+        <div style="margin:12px 0;">
+          <button class="btn secondary" onclick="app.exportCertificate()" style="font-size:0.8rem; margin-right:8px;" data-i18n="cert_download">💾 JSON</button>
+          <button class="btn secondary" onclick="app.exportQwenPortfolio()" style="font-size:0.8rem; margin-right:8px;" data-i18n="cert_qwen_export">📤 Qwen Format</button>
+          <button class="btn secondary" onclick="app.printCertificate()" style="font-size:0.8rem;" data-i18n="cert_print">🖨️ Print</button>
+        </div>
+        <div class="cert-badge" data-i18n="cert_badge">Qwen Deepfake Specialist</div>
+        <div class="btn-group" style="justify-content:center; margin-top:16px; flex-wrap:wrap;">
+          <button class="btn" onclick="app.printCertificate()" data-i18n="cert_print">🖨️ Print / PDF</button>
+          <button class="btn secondary" onclick="app.switchTab('practice')" data-i18n="cert_practice">🛡️ Practice</button>
+        </div>
+        <div class="cert-validator">
+          <h4 style="color:var(--qwen); margin:0 0 8px 0;" data-i18n="cert_validate_title">🔍 Verify Certificate</h4>
+          <input type="text" id="validateInput" placeholder="QWEN-DEEPFAKE-XXXXXX" pattern="QWEN-DEEPFAKE-[A-Z0-9]{6}">
+          <button class="btn secondary" onclick="app.validateCertificate()" style="width:100%; font-size:0.8rem;" data-i18n="cert_validate_btn">✅ Check</button>
+          <div id="validateResult" style="margin-top:8px; font-size:0.8rem; display:none;"></div>
+        </div>
+        <p style="font-size:0.75rem; color:var(--muted); margin-top:12px;" data-i18n="cert_security">🔒 Offline • SHA-256 • Qwen-compatible</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🛡️ PRACTICE -->
+  <section id="practice" class="tab-content">
+    <div class="card" style="text-align:center; border-color:var(--qwen);">
+      <h3 data-i18n="practice_title">🛡️ Practice: Qwen Deepfake Cases</h3>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:8px;" data-i18n="practice_subtitle">Synthetic content analysis • Qwen reporting formats</p>
+    </div>
+    <div id="practiceContainer"></div>
+  </section>
+
+  <!-- 📚 LIBRARY -->
+  <section id="library" class="tab-content">
+    <div class="card" style="text-align:center; border-color:var(--qwen);">
+      <h3 data-i18n="library_title">📚 Qwen Deepfake Specialist Library</h3>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:8px;" data-i18n="library_subtitle">Pipelines, data formats, tools, materials</p>
+    </div>
+
+    <!-- WHY QWEN NEEDS SPECIALISTS -->
+    <div class="card lib-section" data-tags="qwen why pipelines">
+      <h3 style="color:var(--qwen);" data-i18n="why_qwen_title">🎯 Why Qwen needs Deepfake Detection Specialists</h3>
+      <p style="font-size:0.82rem; color:var(--muted); margin-bottom:12px;" data-i18n="why_qwen_desc">
+        Qwen (Tongyi Qianwen) develops multimodal models (Qwen-VL, Qwen-Audio, Qwen2.5-Multimodal). Safe operation requires specialists covering these tasks:
+      </p>
+      <div class="pipeline-grid">
+        <div class="pipeline-card">
+          <h4>🧹 Data Curation</h4>
+          <p data-i18n="pipe1_desc">Filtering synthetic/manipulative content from training datasets</p>
+          <span class="fmt">qwen_dataset_clean.json</span>
+          <div style="margin-top:4px;"><span class="tag tag-qwen">real</span><span class="tag tag-qwen">synthetic</span><span class="tag tag-qwen">adversarial</span></div>
+        </div>
+        <div class="pipeline-card">
+          <h4>🛡️ Input Moderation</h4>
+          <p data-i18n="pipe2_desc">Checking user media requests for deepfakes before model input</p>
+          <span class="fmt">qwen_safety_report.md</span>
+          <div style="margin-top:4px;"><span class="tag tag-green">escalation-flags</span></div>
+        </div>
+        <div class="pipeline-card">
+          <h4>🧪 Red-Teaming & Eval</h4>
+          <p data-i18n="pipe3_desc">Testing Qwen-VL/Audio robustness against adversarial deepfakes</p>
+          <span class="fmt">qwen_vuln_eval.csv</span>
+          <div style="margin-top:4px;"><span class="tag tag-blue">steps reproduc</span></div>
+        </div>
+        <div class="pipeline-card">
+          <h4>📊 RLHF Annotation</h4>
+          <p data-i18n="pipe4_desc">Labeling model output quality/reliability for multimodal queries</p>
+          <span class="fmt">qwen_rlhf_pair.json</span>
+          <div style="margin-top:4px;"><span class="tag tag-qwen">guidelines-compliance</span></div>
+        </div>
+        <div class="pipeline-card">
+          <h4>⚖️ AI Safety Compliance</h4>
+          <p data-i18n="pipe5_desc">Auditing compliance with Tongyi / Alibaba AI Principles</p>
+          <span class="fmt">qwen_compliance_check.pdf</span>
+          <div style="margin-top:4px;"><span class="tag tag-green">ISO/IEC 42001</span></div>
+        </div>
+      </div>
+      <div class="warning-box" style="margin-top:12px;">
+        <strong data-i18n="warning_title">💡 Important:</strong>
+        <span data-i18n="why_warning">These specialists don't write model code, but directly influence safety, quality and regulatory compliance. Qwen accepts them via official data annotation, safety review and multimodal eval pipelines.</span>
+      </div>
+    </div>
+
+    <!-- PIPELINE DIAGRAM -->
+    <div class="card lib-section" data-tags="pipeline flow qwen">
+      <h3 style="color:var(--accent);" data-i18n="flow_title">🔄 How specialists integrate into Qwen workflow</h3>
+      <div style="background:rgba(0,0,0,0.3); padding:16px; border-radius:10px; margin:12px 0; font-size:0.8rem; text-align:center; line-height:2;">
+        <div style="color:var(--text);">📥 <span data-i18n="flow_step1">User media request</span></div>
+        <div style="color:var(--muted);">↓</div>
+        <div style="color:var(--accent);">🛡️ <span data-i18n="flow_step2">Moderation / Deepfake Filter</span> <span class="tag tag-green">✅ Specialist checks incoming media</span></div>
+        <div style="color:var(--muted);">↓</div>
+        <div style="color:var(--text);">🤖 <span data-i18n="flow_step3">Qwen-VL / Qwen-Audio processing</span></div>
+        <div style="color:var(--muted);">↓</div>
+        <div style="color:var(--warning);">🧪 <span data-i18n="flow_step4">Eval / Red-Team</span> <span class="tag tag-qwen">✅ Testing outputs for robustness</span></div>
+        <div style="color:var(--muted);">↓</div>
+        <div style="color:var(--text);">📝 <span data-i18n="flow_step5">RLHF / Fine-tuning</span> <span class="tag tag-green">✅ Data labeling for alignment</span></div>
+        <div style="color:var(--muted);">↓</div>
+        <div style="color:var(--success);">⚖️ <span data-i18n="flow_step6">Safety policies / Compliance</span> <span class="tag tag-qwen">✅ Audit reports</span></div>
+      </div>
+    </div>
+
+    <!-- COLLABORATION FORMATS -->
+    <div class="card lib-section" data-tags="collaboration jobs qwen">
+      <h3 style="color:var(--gold);" data-i18n="collab_title">🔗 Collaboration formats with Qwen/Alibaba Cloud</h3>
+      <div class="collab-grid">
+        <div class="collab-card green">
+          <h4>🟢 Official Data Annotation Pipeline</h4>
+          <p data-i18n="collab1">Via Alibaba Cloud Data Service</p>
+        </div>
+        <div class="collab-card yellow">
+          <h4>🟡 Safety Reviewer / Eval Contributor</h4>
+          <p data-i18n="collab2">Via Tongyi Community & GitHub</p>
+        </div>
+        <div class="collab-card orange">
+          <h4>🟠 External Compliance Auditor</h4>
+          <p data-i18n="collab3">For partners integrating Qwen API</p>
+        </div>
+        <div class="collab-card blue">
+          <h4>🔵 Freelance RLHF Annotator</h4>
+          <p data-i18n="collab4">Via annotation platforms working with Qwen data</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- MATERIALS -->
+    <div class="card lib-section" data-tags="materials templates qwen">
+      <h3 style="color:var(--accent);" data-i18n="materials_title">📦 Ready materials (Qwen-specific)</h3>
+      <p style="font-size:0.8rem; color:var(--muted); margin-bottom:12px;" data-i18n="materials_note">All materials work offline, no telemetry, mobile-compatible.</p>
+      <div class="materials-grid">
+        <div class="material-item">
+          <h4>qwen_safety_guidelines.json</h4>
+          <p>Adapted Tongyi AI Safety rules (offline)</p>
+          <span class="fmt">JSON</span>
+        </div>
+        <div class="material-item">
+          <h4>qwen_rlhf_template.json</h4>
+          <p>Labeling template for alignment models</p>
+          <span class="fmt">JSON</span>
+        </div>
+        <div class="material-item">
+          <h4>qwen_eval_report.md</h4>
+          <p>Report structure for Qwen ML engineers</p>
+          <span class="fmt">Markdown</span>
+        </div>
+        <div class="material-item">
+          <h4>qwen_redteam_checklist.pdf</h4>
+          <p>Adversarial testing checklist (offline)</p>
+          <span class="fmt">PDF</span>
+        </div>
+        <div class="material-item">
+          <h4>qwen_dataset_cleaner.js</h4>
+          <p>Script for validating Qwen-compatible JSON datasets</p>
+          <span class="fmt">JS (offline)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SKILLS -->
+    <div class="card lib-section" data-tags="skills qwen">
+      <h3 data-i18n="skills_section">🛠️ Graduate Skills</h3>
+      <div class="skills-grid">
+        <div class="skill-card">
+          <h4 data-i18n="hard_skills">🔹 Hard Skills</h4>
+          <ul>
+            <li data-i18n="hard1">Detect 15+ deepfake artifacts</li>
+            <li data-i18n="hard2">Qwen-Audio spectrogram analysis</li>
+            <li data-i18n="hard3">EXIF/Metadata analysis offline</li>
+            <li data-i18n="hard4">Formats: JSON, CSV, Markdown (Qwen-compatible)</li>
+            <li data-i18n="hard5">RLHF labeling and safety eval</li>
+          </ul>
+        </div>
+        <div class="skill-card">
+          <h4 data-i18n="soft_skills">🔹 Soft Skills</h4>
+          <ul>
+            <li data-i18n="soft1">Pixel-level attention to detail</li>
+            <li data-i18n="soft2">Critical thinking: 'trust but verify'</li>
+            <li data-i18n="soft3">Working with manipulative content (ethics)</li>
+            <li data-i18n="soft4">Clear documentation for ML engineers</li>
+            <li data-i18n="soft5">Compliance mindset: Tongyi AI Principles</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- JOBS -->
+    <div class="card lib-section" data-tags="jobs industries qwen">
+      <h3 data-i18n="jobs_title">💼 Where do Qwen Deepfake Specialists work?</h3>
+      <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+        <span class="tag tag-qwen">📰 Media Verification</span>
+        <span class="tag tag-qwen">⚖️ Legal Forensics</span>
+        <span class="tag tag-qwen">🏦 Fintech KYC</span>
+        <span class="tag tag-qwen">🎬 Social Moderation</span>
+        <span class="tag tag-qwen">🎓 AI Literacy</span>
+        <span class="tag tag-qwen">🏥 Telemedicine</span>
+      </div>
+      <p style="font-size:0.85rem; color:var(--muted); margin-top:12px;" data-i18n="salary_info">Starting salaries: $500-2000/mo • Remote • Flexible</p>
+    </div>
+  </section>
+
+  <!-- 📅 PROGRESS -->
+  <section id="progress" class="tab-content">
+    <div class="card">
+      <h3 data-i18n="progress_path">📈 Path to Qwen Deepfake Specialist</h3>
+      <ol style="padding-left:20px; color:var(--muted); line-height:1.8; font-size:0.82rem;">
+        <li><b>Days 1-3:</b> <span data-i18n="days1_3_desc">Qwen-VL architecture, deepfake types, visual artifacts</span></li>
+        <li><b>Days 4-6:</b> <span data-i18n="days4_6_desc">Audio synthesis, EXIF, RLHF labeling, Qwen formats</span></li>
+        <li><b>Days 7-8:</b> <span data-i18n="days7_8_desc">Red-teaming, moderation, complex analysis</span></li>
+        <li><b>Day 9:</b> <span data-i18n="day9_desc">Portfolio in Qwen formats</span></li>
+        <li><b>Day 10:</b> <span data-i18n="day10_desc">FINAL EXAM (10/10)</span></li>
+      </ol>
+    </div>
+    <div class="card">
+      <h3 data-i18n="output_title">📦 Qwen Reporting Formats</h3>
+      <div style="margin-top:8px;">
+        <div class="qwen-format">{"type": "qwen_rlhf_format", "verdict": "synthetic", "confidence": 0.92}</div>
+        <div class="qwen-format">pipeline: qwen-multimodal-safety | version: qwen-v2.5</div>
+        <div class="qwen-format">compliance: tongyi_safety_v2 | iso_iec_42001</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="support">
+    <h3 data-i18n="support_title">🤝 SUPPORT THE PROJECT 💙</h3>
+    <p data-i18n="support_desc">App is free. Always will be.<br>Support development:</p>
+    <div style="background:rgba(0,0,0,0.3); padding:6px 10px; border-radius:6px; display:inline-block; margin:4px 0;">
+      <span id="phoneNum" style="color:var(--gold); font-weight:bold;">8-920-227-56-76</span>
+    </div>
+    <button class="btn secondary" style="margin-top:6px; font-size:0.8rem;" onclick="app.copyPhone()" data-i18n="copy_phone">📋 Copy</button>
+    <a href="https://ancf-hue.github.io/" target="_blank" style="color:var(--accent); text-decoration:none; font-weight:bold; display:block; margin-top:4px;" data-i18n="catalog_link">🌟 Anti-AI Shield Catalog</a>
+  </section>
+
+  <footer data-i18n="footer">Anti-AI Qwen Academy | 100% Offline | Deepfake Detection | Qwen Pipelines</footer>
+</main>
+
+<!-- GUIDE MODAL -->
+<div id="guideModal" class="modal" onclick="if(event.target===this)app.closeModal('guideModal')">
+  <div class="modal-content">
+    <button class="modal-close" onclick="app.closeModal('guideModal')">✕</button>
+    <h2 style="color:var(--qwen); margin-bottom:12px;" data-i18n="guide_title">🚀 10-Day Plan</h2>
+    <ol style="padding-left:20px; color:var(--muted); line-height:1.8; font-size:0.85rem;">
+      <li><b>1:</b> <span>🧬 Qwen-VL / Qwen-Audio architecture & verifier role</span></li>
+      <li><b>2:</b> <span>🗃️ Synthetic types in Qwen datasets (generation, montage, adversarial)</span></li>
+      <li><b>3:</b> <span>🛡️ Offline verification tools (EXIF, spectrograms, Tongyi Safety checklists)</span></li>
+      <li><b>4:</b> <span>👁️ Image detection for Qwen-VL (semantics, boundaries, lighting)</span></li>
+      <li><b>5:</b> <span>🔊 Audio verification for Qwen-Audio (voice cloning, desync, spectrum)</span></li>
+      <li><b>6:</b> <span>📝 RLHF labeling prep (JSON/CSV formats, Qwen guidelines)</span></li>
+      <li><b>7:</b> <span>🧨 Red-Teaming Qwen: prompt attacks + media, report writing</span></li>
+      <li><b>8:</b> <span>🔄 Incoming request moderation: verification pipeline, escalations</span></li>
+      <li><b>9:</b> <span>📁 Portfolio: 5 cases in Qwen-Data-Annotation format</span></li>
+      <li><b>10:</b> <span>🏆 FINAL EXAM (10/10) → QWEN-DEEPFAKE-XXXXXX</span></li>
+    </ol>
+    <button class="btn" style="margin-top:16px; width:100%;" onclick="app.closeModal('guideModal')" data-i18n="guide_start">Let's go!</button>
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ========== 🔐 CERTIFICATE UTILS (Unicode-safe) ==========
+  const CERT_SECRET = "qwen_deepfake_specialist_2026_secret";
+
+  function generateCertSignature(id, issuer) {
+    const str = `${id}:${issuer}:${CERT_SECRET}`;
+    try {
+      // ✅ encodeURIComponent обрабатывает кириллицу и спецсимволы
+      return btoa(encodeURIComponent(str)).substring(0, 24);
+    } catch(e) {
+      // ✅ Fallback: hex-encoding для максимальной совместимости
+      return Array.from(str).map(c => c.charCodeAt(0).toString(16).padStart(2,'0')).join('').substring(0, 24);
+    }
+  }
+
+  function verifyCertSignature(id, issuer, sig) {
+    if (!id || !issuer || !sig) return false;
+    return generateCertSignature(id, issuer) === sig;
+  }
+
+  // ========== 📦 COURSE DATA ==========
+  const QWEN_COURSE = [
+    { 
+      day: 1, 
+      title: { ru: "🧬 Архитектура Qwen-VL / Qwen-Audio и роль верификатора", en: "🧬 Qwen-VL / Qwen-Audio Architecture & Verifier Role" },
+      content: { 
+        ru: "Qwen (Tongyi Qianwen) развивает мультимодальные модели: Qwen-VL (текст+изображения), Qwen-Audio (текст+звук), Qwen2.5-Multimodal. Верификатор обеспечивает качество входных данных и безопасность выводов на всех этапах пайплайна.",
+        en: "Qwen (Tongyi Qianwen) develops multimodal models: Qwen-VL (text+images), Qwen-Audio (text+audio), Qwen2.5-Multimodal. The verifier ensures input data quality and output safety at all pipeline stages."
+      },
+      case: {
+        ru: "Анализ: Qwen-VL получил изображение «новости» и сгенерировал описание. Часть изображения — дипфейк. Модель не распознала артефакт и выдала ложное описание.",
+        en: "Analysis: Qwen-VL received a 'news' image and generated a description. Part of the image is a deepfake. The model failed to detect the artifact and produced a false description."
+      },
+      task: {
+        ru: "Какие 3 шага вы предложите для добавления в пайплайн Qwen-VL, чтобы фильтровать синтетику на входе?",
+        en: "What 3 steps would you propose to add to the Qwen-VL pipeline to filter synthetic content at input?"
+      },
+      check: (a) => (/препроцесс|фильтр|детект|проверк|чек|check|pre.check|filter|detect|verify/i.test(a)) && (/пайплайн|вход|input|модуль|module/i.test(a)) && (/отчёт|маркиров|метк|label|лог|log/i.test(a)),
+      hint: {
+        ru: "1) Pre-check детектор перед моделью (TFLite offline) 2) Пометка подозрительных входов метками synthetic/adversarial 3) Альтернативный пайплайн для верифицированного контента с логированием",
+        en: "1) Pre-check detector before model (TFLite offline) 2) Label suspicious inputs as synthetic/adversarial 3) Alternative pipeline for verified content with logging"
+      },
+      qwenFormat: '{"type": "qwen_model_gap_report.json", "pre_check": true, "labels": ["real","synthetic","adversarial"]}'
+    },
+    { 
+      day: 2, 
+      title: { ru: "🗃️ Типы синтетики в датасетах Qwen", en: "🗃️ Synthetic Types in Qwen Datasets" },
+      content: {
+        ru: "Три основных типа: генерация (GAN/Diffusion), монтаж (splicing), adversarial-атаки. Каждый тип по-разному влияет на качество обучения Qwen и требует отдельных стратегий фильтрации.",
+        en: "Three main types: generation (GAN/Diffusion), montage (splicing), adversarial attacks. Each type affects Qwen training quality differently and requires separate filtering strategies."
+      },
+      case: {
+        ru: "В датасете Qwen для fine-tuning обнаружены: 15% сгенерированных лиц (DALL-E, Midjourney), 8% монтажных сцен, 3% adversarial-текстов с незаметными паттернами шума.",
+        en: "In Qwen fine-tuning dataset found: 15% generated faces (DALL-E, Midjourney), 8% montage scenes, 3% adversarial texts with imperceptible noise patterns."
+      },
+      task: {
+        ru: "Опишите стратегию очистки датасета. Какие метки назначите каждому типу синтетики?",
+        en: "Describe a dataset cleaning strategy. What labels would you assign to each synthetic type?"
+      },
+      check: (a) => (/очистк|удален|фильтр|отсев|curat|clean|filter|remove/i.test(a)) && (/метк|label|synthetic|fake|gan|diffusion|adversarial/i.test(a)) && (/баланс|репрезент|выборк|balance|represent/i.test(a)),
+      hint: {
+        ru: "Метки: 'real', 'synthetic_gan', 'synthetic_diffusion', 'adversarial', 'montage'. Стратегия: quarantine → review → label → rebalance dataset.",
+        en: "Labels: 'real', 'synthetic_gan', 'synthetic_diffusion', 'adversarial', 'montage'. Strategy: quarantine → review → label → rebalance dataset."
+      },
+      qwenFormat: '{"type": "qwen_data_label.csv", "columns": ["id","label","confidence","reviewer"]}'
+    },
+    { 
+      day: 3, 
+      title: { ru: "🛡️ Offline-инструменты проверки (EXIF, спектрограммы, чек-листы Tongyi Safety)", en: "🛡️ Offline Verification Tools (EXIF, Spectrograms, Tongyi Safety Checklists)" },
+      content: {
+        ru: "EXIF-анализ, спектрограммы, чек-листы Tongyi Safety. Всё работает без интернета на мобильных устройствах — ключевое требование для полевой верификации.",
+        en: "EXIF analysis, spectrograms, Tongyi Safety checklists. Everything works offline on mobile devices — a key requirement for field verification."
+      },
+      case: {
+        ru: "Файл news_photo.jpg: EXIF показывает 'Adobe Photoshop', дата создания позже даты события, GPS отсутствует. Разрешение 4K, но шум на 120% выше нормы для камеры этого типа.",
+        en: "File news_photo.jpg: EXIF shows 'Adobe Photoshop', creation date after event date, GPS missing. 4K resolution but noise 120% above normal for this camera type."
+      },
+      task: {
+        ru: "Составьте отчёт по шаблону Tongyi Safety. Вывод: синтетика или оригинал? Обоснуйте каждый признак.",
+        en: "Create a report using Tongyi Safety template. Verdict: synthetic or original? Justify each indicator."
+      },
+      check: (a) => (/photoshop|редакт|software|exif|editor/i.test(a)) && (/шум|артефакт|разрешен|аномал|noise|artifact|resolution|anomal/i.test(a)) && (/синтет|фейк|манипуляц|fake|synthetic|manipul/i.test(a)),
+      hint: {
+        ru: "Вывод: HIGH PROBABILITY SYNTHETIC. Признаки: редактор в EXIF (Software поле), аномальный шум при 4K, отсутствие GPS при новостном фото, дата не совпадает с событием.",
+        en: "Verdict: HIGH PROBABILITY SYNTHETIC. Indicators: editor in EXIF (Software field), anomalous noise at 4K, missing GPS for news photo, date mismatch with event."
+      },
+      qwenFormat: '{"type": "qwen_manual_audit.md", "verdict": "SYNTHETIC", "confidence": 0.87}'
+    },
+    { 
+      day: 4, 
+      title: { ru: "👁️ Детекция в изображениях для Qwen-VL (семантика, границы, освещение)", en: "👁️ Image Detection for Qwen-VL (Semantics, Boundaries, Lighting)" },
+      content: {
+        ru: "Границы вставки, несоответствие теней, артефакты кожи, цветовая температура, отражения в глазах. Qwen-VL может усиливать артефакты при генерации описания.",
+        en: "Insertion boundaries, shadow mismatches, skin artifacts, color temperature, eye reflections. Qwen-VL may amplify artifacts when generating descriptions."
+      },
+      case: {
+        ru: "Изображение политика на фоне флага. Границы лица размыты (edge artifact), тень от носа направлена влево, источник света справа. Цвет кожи на 15% теплее фона.",
+        en: "Image of politician against flag background. Face boundaries blurred (edge artifact), nose shadow points left, light source on right. Skin tone 15% warmer than background."
+      },
+      task: {
+        ru: "Назовите 4 признака монтажа и оцените уверенность по шкале 0-100%.",
+        en: "Name 4 montage indicators and rate confidence on a 0-100% scale."
+      },
+      check: (a) => (/границ|тень|цвет|кожа|свет|edge|shadow|color|skin|light/i.test(a)) && (a.length > 10),
+      hint: {
+        ru: "1) Размытые границы лица (boundary artifact) 2) Противоположные тени 3) Несоответствие цветовой температуры кожи/фона 4) Аномалии текстуры кожи. Уверенность: ~85%.",
+        en: "1) Blurred face boundaries (boundary artifact) 2) Opposing shadows 3) Skin/background color temperature mismatch 4) Skin texture anomalies. Confidence: ~85%."
+      },
+      qwenFormat: '{"type": "qwen_vl_eval.json", "artifacts": ["boundary","shadow","color","skin"], "confidence": 0.85}'
+    },
+    { 
+      day: 5, 
+      title: { ru: "🔊 Аудио-верификация для Qwen-Audio (voice cloning, рассинхрон, спектр)", en: "🔊 Audio Verification for Qwen-Audio (Voice Cloning, Desync, Spectrum)" },
+      content: {
+        ru: "Voice cloning, спектральные разрывы, отсутствие jitter/shimmer, рассинхрон с видео, неестественные паузы. Qwen-Audio обрабатывает голосовые запросы — критично выявлять синтез.",
+        en: "Voice cloning, spectral gaps, missing jitter/shimmer, video desync, unnatural pauses. Qwen-Audio processes voice requests — critical to detect synthesis."
+      },
+      case: {
+        ru: "Аудиофайл: голос CEO просит срочный перевод $50k. Спектрограмма показывает разрывы на 4-8 кГц. Паузы между словами ровно 0.3 сек (человек: 0.15-0.5 вариабельно). Jitter: 0.02% (норма 0.3-1%).",
+        en: "Audio file: CEO voice requests urgent $50k transfer. Spectrogram shows gaps at 4-8 kHz. Pauses between words exactly 0.3 sec (human: 0.15-0.5 variable). Jitter: 0.02% (normal 0.3-1%)."
+      },
+      task: {
+        ru: "Определите признаки синтеза голоса. Вердикт для пайплайна Qwen-Audio?",
+        en: "Identify voice synthesis indicators. Verdict for Qwen-Audio pipeline?"
+      },
+      check: (a) => (/спектр|разрыв|частот|jitter|пауз|равномерн|вариабельн|spectrum|gap|freq|jitter|pause|uniform|variabl/i.test(a)) && (/синтез|клон|фейк|voice.clone|synth|fake/i.test(a)),
+      hint: {
+        ru: "Синтетический голос: спектральные артефакты (>4 кГц), неестественная регулярность пауз, отсутствие микродрожаний (jitter). Вердикт: BLOCK_INPUT + escalation.",
+        en: "Synthetic voice: spectral artifacts (>4 kHz), unnatural pause regularity, missing micro-variations (jitter). Verdict: BLOCK_INPUT + escalation."
+      },
+      qwenFormat: '{"type": "qwen_audio_report.csv", "pipeline_action": "BLOCK_INPUT", "reason": "synthetic_voice"}'
+    },
+    { 
+      day: 6, 
+      title: { ru: "📝 Подготовка разметки для RLHF (форматы JSON/CSV, guidelines Qwen)", en: "📝 RLHF Labeling Prep (JSON/CSV Formats, Qwen Guidelines)" },
+      content: {
+        ru: "Разметка пар «запрос → ответ → оценка достоверности». Форматы JSON/CSV совместимы с пайплайнами alignment Qwen. Guidelines-compliance score определяет качество разметки.",
+        en: "Labeling pairs 'query → response → reliability score'. JSON/CSV formats compatible with Qwen alignment pipelines. Guidelines-compliance score determines labeling quality."
+      },
+      case: {
+        ru: "Запрос: «Опиши это изображение». Qwen-VL ответ: «Политик выступает на конференции». Изображение — дипфейк, реальное событие не существует. Модель выдала ложное описание.",
+        en: "Query: 'Describe this image'. Qwen-VL response: 'Politician speaking at conference'. Image is deepfake, real event doesn't exist. Model produced false description."
+      },
+      task: {
+        ru: "Создайте RLHF-пару: запрос, ответ модели, ваша оценка, рекомендация для дообучения.",
+        en: "Create an RLHF pair: query, model response, your rating, recommendation for fine-tuning."
+      },
+      check: (a) => (/запрос|prompt|query/i.test(a)) && (/ответ|response|output/i.test(a)) && (/достоверн|синтет|ошибк|incorrect|reliab|synth|error/i.test(a)) && (/дообучен|fine-tun|train|align/i.test(a)),
+      hint: {
+        ru: "Оценка: RESPONSE_INCORRECT (основано на синтетическом входе). Рекомендация: добавить примеры дипфейков в negative training set для alignment.",
+        en: "Rating: RESPONSE_INCORRECT (based on synthetic input). Recommendation: add deepfake examples to negative training set for alignment."
+      },
+      qwenFormat: '{"type": "qwen_rlhf_train.json", "rlhf": {"query": "...", "response": "...", "label": "INCORRECT", "guidelines_score": 0.1}}'
+    },
+    { 
+      day: 7, 
+      title: { ru: "🧨 Red-Teaming Qwen: промпт-атаки + медиа, составление отчётов", en: "🧨 Red-Teaming Qwen: Prompt Attacks + Media, Report Writing" },
+      content: {
+        ru: "Тестирование устойчивости Qwen-VL/Audio к adversarial-дипфейкам. Документирование уязвимостей для ML-инженеров: шаги воспроизведения, severity, рекомендация по фиксу.",
+        en: "Testing Qwen-VL/Audio robustness against adversarial deepfakes. Documenting vulnerabilities for ML engineers: reproduction steps, severity, fix recommendations."
+      },
+      case: {
+        ru: "Adversarial-тест: изображение с незаметным шумовым паттерном (perturbation). Qwen-VL классифицирует как «реальное», хотя это сгенерированное Midjourney лицо. Модель не распознаёт атаку.",
+        en: "Adversarial test: image with imperceptible noise pattern (perturbation). Qwen-VL classifies as 'real' though it's a Midjourney-generated face. Model fails to detect attack."
+      },
+      task: {
+        ru: "Составьте отчёт об уязвимости: шаги воспроизведения, severity, рекомендация по фиксу.",
+        en: "Write a vulnerability report: reproduction steps, severity, fix recommendation."
+      },
+      check: (a) => (/воспроизведен|steps|шаг|repro|reproduc/i.test(a)) && (/severity|критичн|важн|high|critical/i.test(a)) && (/фикс|исправлен|защит|pre.check|adversarial.train|fix|protect/i.test(a)),
+      hint: {
+        ru: "Severity: HIGH. Steps: 1) Добавить noise pattern 2) Подать в Qwen-VL 3) Сравнить output. Fix: добавить adversarial training, внедрить pre-check фильтр, обновить guidelines.",
+        en: "Severity: HIGH. Steps: 1) Add noise pattern 2) Submit to Qwen-VL 3) Compare output. Fix: add adversarial training, implement pre-check filter, update guidelines."
+      },
+      qwenFormat: '{"type": "qwen_redteam_log.md", "vuln": {"severity": "HIGH", "type": "adversarial_noise", "fix": "pre-check + adversarial_train"}}'
+    },
+    { 
+      day: 8, 
+      title: { ru: "🔄 Модерация входящих запросов: pipeline проверки, escalations", en: "🔄 Incoming Request Moderation: Verification Pipeline, Escalations" },
+      content: {
+        ru: "Многоуровневая проверка: автоматический детектор → ручной аудит → escalation → логирование. Приоритизация рисков для потоковой обработки в Qwen.",
+        en: "Multi-level verification: auto-detector → manual audit → escalation → logging. Risk prioritization for streaming processing in Qwen."
+      },
+      case: {
+        ru: "Поток: 1000 запросов/час. Авто-детектор помечает 12% как подозрительные. Из них 4% — подтверждённые дипфейки. 2% требуют escalation к senior-специалисту.",
+        en: "Stream: 1000 requests/hour. Auto-detector flags 12% as suspicious. Of these, 4% are confirmed deepfakes. 2% require escalation to senior specialist."
+      },
+      task: {
+        ru: "Опишите процесс модерации: роли, SLA, эскалация, логирование.",
+        en: "Describe the moderation process: roles, SLA, escalation, logging."
+      },
+      check: (a) => (/рол|специалист|модератор|reviewer|role|moderator/i.test(a)) && (/sla|время|скорост|timeout|time|speed/i.test(a)) && (/эскалац|escalat|повышен|senior|escalation/i.test(a)) && (/лог|журнал|запис|log|journal|record/i.test(a)),
+      hint: {
+        ru: "SLA: авто-проверка <2сек, ручной аудит <5мин, escalation <15мин. Лог: timestamp, hash, verdict, reviewer_id. Роли: auto-detector → L1 reviewer → L2 senior.",
+        en: "SLA: auto-check <2s, manual audit <5min, escalation <15min. Log: timestamp, hash, verdict, reviewer_id. Roles: auto-detector → L1 reviewer → L2 senior."
+      },
+      qwenFormat: '{"type": "qwen_moderation_queue.json", "sla": {"auto": "<2s", "manual": "<5m", "escalation": "<15m"}}'
+    },
+    { 
+      day: 9, 
+      title: { ru: "📁 Портфолио: 5 кейсов в формате Qwen-Data-Annotation", en: "📁 Portfolio: 5 Cases in Qwen-Data-Annotation Format" },
+      content: {
+        ru: "Сборка готовых отчётов для подачи в Contributor Pipeline. Соответствие стандартам Tongyi Safety и ISO/IEC 42001. Каждый кейс — отдельный формат отчётности.",
+        en: "Assembling ready reports for Contributor Pipeline submission. Compliance with Tongyi Safety and ISO/IEC 42001 standards. Each case uses a separate reporting format."
+      },
+      case: {
+        ru: "Ваше портфолио должно содержать: 1 VL-кейс (qwen_vl_eval.json), 1 Audio-кейс (qwen_audio_report.csv), 1 Red-Team отчёт (qwen_redteam_log.md), 1 RLHF-разметка (qwen_rlhf_pair.json), 1 Compliance-чек (qwen_compliance_check.pdf).",
+        en: "Your portfolio should contain: 1 VL case (qwen_vl_eval.json), 1 Audio case (qwen_audio_report.csv), 1 Red-Team report (qwen_redteam_log.md), 1 RLHF labeling (qwen_rlhf_pair.json), 1 Compliance check (qwen_compliance_check.pdf)."
+      },
+      task: {
+        ru: "Опишите структуру каждого кейса: какие поля, метрики, выводы должны быть в отчёте.",
+        en: "Describe each case structure: which fields, metrics, conclusions should be in the report."
+      },
+      check: (a) => (/vl|audio|redteam|rlhf|compliance/i.test(a)) && (/метрик|confidence|score|metric/i.test(a)) && (/вывод|вердикт|verdict|conclusion/i.test(a)),
+      hint: {
+        ru: "Каждый кейс: metadata (id, type, date), input_hash, analysis (artifacts/methods), verdict (synthetic/real), confidence (0-1), qwen_format_output, reviewer_notes.",
+        en: "Each case: metadata (id, type, date), input_hash, analysis (artifacts/methods), verdict (synthetic/real), confidence (0-1), qwen_format_output, reviewer_notes."
+      },
+      qwenFormat: '{"type": "qwen_portfolio.zip", "cases": 5, "formats": ["vl","audio","redteam","rlhf","compliance"]}'
+    },
+    { 
+      day: 10, 
+      title: { ru: "🏆 ФИНАЛЬНЫЙ ЭКЗАМЕН", en: "🏆 FINAL EXAM" }, 
+      content: { 
+        ru: "Проверка всех навыков Qwen Deepfake Specialist. Нужно 10 из 10 для доступа к Contributor Pipeline.", 
+        en: "Testing all Qwen Deepfake Specialist skills. Need 10 out of 10 for Contributor Pipeline access." 
+      }, 
+      isExam: true,
+      examQuestions: [
+        { q: { ru: "Qwen-VL обрабатывает только текстовые запросы.", en: "Qwen-VL processes only text queries." }, correct: false, expl: { ru: "Qwen-VL — мультимодальная модель (текст + изображения).", en: "Qwen-VL is a multimodal model (text + images)." } },
+        { q: { ru: "EXIF может содержать информацию о редакторе файла (поле Software).", en: "EXIF can contain file editor information (Software field)." }, correct: true, expl: { ru: "Поле 'Software' показывает редактор (Photoshop, DALL-E и т.д.).", en: "The 'Software' field shows the editor (Photoshop, DALL-E, etc.)." } },
+        { q: { ru: "Спектральные разрывы на высоких частотах (>4 кГц) — признак синтеза голоса.", en: "Spectral gaps at high frequencies (>4 kHz) indicate voice synthesis." }, correct: true, expl: { ru: "Генераторы часто оставляют артефакты в высокочастотной области.", en: "Generators often leave artifacts in the high-frequency range." } },
+        { q: { ru: "В RLHF разметке достаточно указать только 'хорошо/плохо' без пояснений.", en: "In RLHF labeling, it's enough to mark only 'good/bad' without explanations." }, correct: false, expl: { ru: "Нужна детализация: почему, какой аспект, recommendation для дообучения.", en: "Detail is needed: why, which aspect, recommendation for fine-tuning." } },
+        { q: { ru: "Adversarial-атаки могут обманывать Qwen-VL без видимых изменений изображения.", en: "Adversarial attacks can fool Qwen-VL without visible image changes." }, correct: true, expl: { ru: "Незаметный noise pattern (perturbation) меняет предсказания модели.", en: "Imperceptible noise pattern (perturbation) changes model predictions." } },
+        { q: { ru: "SLA для авто-проверки медиа в потоке модерации должен быть <2 секунд.", en: "SLA for auto media verification in moderation stream should be <2 seconds." }, correct: true, expl: { ru: "Для потоковой обработки 1000+ запросов/час это стандартный SLA.", en: "For streaming processing of 1000+ requests/hour this is standard SLA." } },
+        { q: { ru: "Escalation — это передача сложного кейса senior-специалисту.", en: "Escalation means passing a complex case to a senior specialist." }, correct: true, expl: { ru: "Повышение уровня проверки при высокой uncertainty или критичности.", en: "Raising verification level for high uncertainty or criticality." } },
+        { q: { ru: "Портфолио для Qwen должно содержать кейсы в форматах VL, Audio, Red-Team, RLHF, Compliance.", en: "Portfolio for Qwen should contain cases in VL, Audio, Red-Team, RLHF, Compliance formats." }, correct: true, expl: { ru: "Все 5 форматов демонстрируют полную компетенцию.", en: "All 5 formats demonstrate full competency." } },
+        { q: { ru: "ISO/IEC 42001 — международный стандарт по управлению ИИ-системами.", en: "ISO/IEC 42001 is an international standard for AI system management." }, correct: true, expl: { ru: "AI management system standard, релевантен для compliance.", en: "AI management system standard, relevant for compliance." } },
+        { q: { ru: "Deepfake Detection Specialist не влияет на качество обучения Qwen.", en: "Deepfake Detection Specialist doesn't affect Qwen training quality." }, correct: false, expl: { ru: "Напрямую влияет через data curation и RLHF annotation.", en: "Directly affects through data curation and RLHF annotation." } }
+      ]
+    }
+  ];
+
+  const PRACTICE_CASES = [
+    { 
+      id: "q1", 
+      title: { ru: "Qwen-VL: Новостное изображение", en: "Qwen-VL: News Image" }, 
+      text: { 
+        ru: "Фото: политик подписывает документ. Дата события: 2024. EXIF: 'Created with DALL-E 3', GPS: null, Noise: 180% выше нормы для камеры этого типа.",
+        en: "Photo: politician signing document. Event date: 2024. EXIF: 'Created with DALL-E 3', GPS: null, Noise: 180% above normal for this camera type."
+      }, 
+      task: { 
+        ru: "Вердикт для пайплайна? Обоснуйте по 3+ признакам.", 
+        en: "Verdict for pipeline? Justify with 3+ indicators." 
+      }, 
+      check: (a) => /dall|синтет|фейк|fake|synthetic/i.test(a) && /пайплайн|блок|block|reject|эскалац|escalat/i.test(a) 
+    },
+    { 
+      id: "q2", 
+      title: { ru: "Qwen-Audio: Голосовой запрос", en: "Qwen-Audio: Voice Request" }, 
+      text: {
+        ru: "Аудио: 'Переведите $50k на этот счёт сейчас.' Спектрограмма: ровные пики на 6 кГц. Jitter: 0.02% (норма: 0.3-1%). Паузы: ровно 0.3 сек между словами.",
+        en: "Audio: 'Transfer $50k to this account now.' Spectrogram: even peaks at 6 kHz. Jitter: 0.02% (normal: 0.3-1%). Pauses: exactly 0.3 sec between words."
+      }, 
+      task: { 
+        ru: "Анализ + действие для moderation pipeline.", 
+        en: "Analysis + action for moderation pipeline." 
+      }, 
+      check: (a) => /синтез|голос|клон|voice.clone|jitter|synth|voice|clone/i.test(a) && /блок|block|эскалац|escalat|block|escalation/i.test(a) 
+    },
+    { 
+      id: "q3", 
+      title: { ru: "Red-Team: Adversarial тест Qwen-VL", en: "Red-Team: Adversarial Test Qwen-VL" }, 
+      text: {
+        ru: "Изображение с незаметным паттерном шума (perturbation). Qwen-VL: 'Реальное фото'. Ground truth: сгенерировано Midjourney v6. Модель не обнаруживает артефакт.",
+        en: "Image with imperceptible noise pattern (perturbation). Qwen-VL: 'Real photo'. Ground truth: generated by Midjourney v6. Model fails to detect artifact."
+      }, 
+      task: { 
+        ru: "Отчёт об уязвимости: severity, steps, fix.", 
+        en: "Vulnerability report: severity, steps, fix." 
+      }, 
+      check: (a) => /severity|критичн|high|critical/i.test(a) && /adversarial|шум|perturb|noise/i.test(a) && /фикс|защит|трениров|pre.check|fix|protect|train/i.test(a) 
+    }
+  ];
+
+  // ========== 🌐 i18n ==========
+  const i18n = {
+    ru: {
+      hero_subtitle: "Qwen (Tongyi Qianwen) • 100% Offline • 10 дней",
+      qwen_title: "Anti-AI Qwen Academy: Deepfake Specialist",
+      guide_btn: "План 10 дней",
+      concept1: "👁️ Visual Artifacts", concept2: "🔊 Audio Synth", concept3: "📊 Data Curation", concept4: "🛡️ Safety Eval",
+      tab_course: "🎓 Обучение", tab_practice: "🛡️ Практика", tab_library: "📚 Библиотека", tab_progress: "📅 Прогресс",
+      cert_conditions: "🏆 УСЛОВИЯ СЕРТИФИКАТА",
+      cond1_sub: "Deepfake + Qwen форматы", cond2_sub: "Без ошибок", cond3: "Портфолио", cond3_sub: "5 кейсов в Qwen-форматах",
+      cert_warning: "⚠️ Идеальный результат → доступ к Contributor Pipeline",
+      progress_title: "📊 Прогресс", lessons_done: "Уроков пройдено",
+      reset_btn: "🔄 Сбросить", reset_warning: "⚠️ Все данные будут удалены",
+      cert_heading: "🎓 СЕРТИФИКАТ",
+      cert_course: "Курс: ",
+      cert_confirms: "Настоящим подтверждается, что",
+      cert_who: "Сертифицированный Deepfake Detection Specialist",
+      cert_completed: "успешно завершил курс верификации синтетического контента для пайплайнов Qwen",
+      cert_issuer: "Issuer:", cert_pipeline: "Pipeline:", cert_compliance: "Compliance:", cert_date_label: "Дата:",
+      cert_download: "💾 JSON", cert_qwen_export: "📤 Qwen Format", cert_print: "🖨️ Print",
+      cert_badge: "Qwen Deepfake Specialist", cert_practice: "🛡️ Practice",
+      cert_validate_title: "🔍 Проверка сертификата", cert_validate_btn: "✅ Check",
+      cert_security: "🔒 Offline • SHA-256 • Qwen-compatible",
+      practice_title: "🛡️ Практика: Qwen Deepfake Cases",
+      practice_subtitle: "Анализ синтетического контента • Qwen-форматы отчётности",
+      library_title: "📚 Qwen Deepfake Specialist Library",
+      library_subtitle: "Пайплайны, форматы данных, инструменты, материалы",
+      why_qwen_title: "🎯 Почему Qwen нуждается в Deepfake Detection Specialists",
+      why_qwen_desc: "Qwen (Tongyi Qianwen) развивает мультимодальные модели (Qwen-VL, Qwen-Audio, Qwen2.5-Multimodal). Для их безопасной работы и улучшения качества требуются специалисты, закрывающие следующие задачи:",
+      pipe1_desc: "Отсев синтетического/манипулятивного контента из тренировочных датасетов",
+      pipe2_desc: "Проверка пользовательских медиа-запросов на дипфейки перед отправкой в модель",
+      pipe3_desc: "Тестирование Qwen-VL/Audio на устойчивость к adversarial-дипфейкам",
+      pipe4_desc: "Разметка «качество/достоверность» выводов модели по мультимодальным запросам",
+      pipe5_desc: "Аудит соответствия выводам политик Tongyi / Alibaba AI Principles",
+      warning_title: "💡 Важно:",
+      why_warning: "Эти специалисты не пишут код модели, но напрямую влияют на её безопасность, качество и соответствие регуляторным стандартам. Qwen принимает таких специалистов через официальные pipeline'ы data annotation, safety review и multimodal eval.",
+      flow_title: "🔄 Как специалисты интегрируются в работу Qwen",
+      flow_step1: "Пользовательский медиа-запрос",
+      flow_step2: "Модерация / Deepfake Filter",
+      flow_step3: "Qwen-VL / Qwen-Audio обработка",
+      flow_step4: "Eval / Red-Team",
+      flow_step5: "RLHF / Fine-tuning",
+      flow_step6: "Политики безопасности / Compliance",
+      collab_title: "🔗 Форматы сотрудничества с Qwen/Alibaba Cloud",
+      collab1: "Через Alibaba Cloud Data Service",
+      collab2: "Через Tongyi Community & GitHub",
+      collab3: "Для партнёров, интегрирующих Qwen API",
+      collab4: "Через платформы разметки, работающие с Qwen-данными",
+      materials_title: "📦 Готовые материалы (Qwen-специфичные)",
+      materials_note: "Все материалы работают без интернета, не собирают телеметрию, совместимы с мобильными устройствами.",
+      skills_section: "🛠️ Навыки выпускника",
+      hard_skills: "🔹 Hard Skills", soft_skills: "🔹 Soft Skills",
+      hard1: "Детекция 15+ артефактов дипфейков", hard2: "Анализ спектрограмм Qwen-Audio",
+      hard3: "EXIF/Metadata анализ без интернета", hard4: "Форматы: JSON, CSV, Markdown (Qwen)",
+      hard5: "RLHF разметка и safety eval",
+      soft1: "Гипер-внимательность к пиксельным деталям", soft2: "Критическое мышление: «доверяй, но проверяй»",
+      soft3: "Работа с манипулятивным контентом (этика)", soft4: "Чёткая документация выводов для ML-инженеров",
+      soft5: "Compliance mindset: Tongyi AI Principles",
+      jobs_title: "💼 Где работают Deepfake-специалисты Qwen?",
+      salary_info: "Стартовые зарплаты: $500-2000/мес • Удалённо • Гибкий график",
+      progress_path: "📈 Путь к Qwen Deepfake Specialist",
+      days1_3_desc: "Архитектура Qwen-VL, типы дипфейков, визуальные артефакты",
+      days4_6_desc: "Аудио-синтез, EXIF, RLHF разметка, Qwen-форматы",
+      days7_8_desc: "Red-teaming, модерация, комплексный анализ",
+      day9_desc: "Портфолио в Qwen-форматах",
+      day10_desc: "ФИНАЛЬНЫЙ ЭКЗАМЕН (10/10)",
+      output_title: "📦 Форматы отчётности Qwen",
+      support_title: "🤝 ПОДДЕРЖАТЬ ПРОЕКТ 💙", support_desc: "Приложение бесплатное. Было и останется.<br>Поддержка разработки:", copy_phone: "📋 Copy", catalog_link: "🌟 Каталог Anti-AI Shield",
+      footer: "Anti-AI Qwen Academy | 100% Offline | Deepfake Detection | Qwen Pipelines",
+      guide_title: "🚀 План 10 дней", guide_start: "Начинаю!",
+      cert_valid: "✅ Сертификат действителен", cert_invalid: "❌ Сертификат не найден",
+      voice_on: "Озвучка включена", voice_off: "Озвучка выключена", lang_changed: "Язык изменён",
+      progress_reset: "Прогресс сброшен", cert_downloaded: "Сертификат скачан", portfolio_downloaded: "Qwen Portfolio скачано",
+      print_cert: "Печать...", copied: "Скопировано",
+      too_short: "⚠️ Слишком кратко! Минимум 10 символов.",
+      correct: "✅ Верно! Урок завершён!", incorrect: "❌ Не совсем так. Изучите подсказку.",
+      exam_perfect: "🎉 ИДЕАЛЬНО! 10 из 10", exam_failed: "😔 Не сдано. {score}/10. Нужно 10.",
+      cert_locked: "Сначала получите сертификат (10/10).", cert_imported: "✅ Сертификат загружен!",
+      cert_bad_sig: "❌ Неверная подпись.", cert_file_error: "❌ Ошибка файла.",
+      reset_confirm: "⚠️ Сбросить весь прогресс?", reset_done: "✅ Сброшено!",
+      day_label: "День", task_label: "Задание", answer_placeholder: "Ваш ответ...",
+      check_btn: "Проверить", hint_btn: "Подсказка", answer_btn: "Ответ",
+      locked_msg: "Пройдите предыдущий урок", final_exam: "ФИНАЛЬНЫЙ ЭКЗАМЕН",
+      exam_instr: "10 вопросов. Нужно <b>10 правильных</b> для доступа к Contributor Pipeline.",
+      question: "Вопрос", true_opt: "Верно", false_opt: "Неверно",
+      submit_exam: "Сдать экзамен", out_of: "из", cert_unlocked: "Доступ к Contributor Pipeline разблокирован ↓",
+      retry_btn: "Ещё раз", too_short_practice: "Слишком кратко",
+      practice_correct: "Верно! Вы нашли ключевую проблему.",
+      practice_incorrect: "Попробуйте ещё раз. Ищите артефакты, рассинхрон или признаки синтеза.",
+      invalid_format: "Неверный формат (QWEN-DEEPFAKE-XXXXXX)", issued_label: "Выдан"
+    },
+    en: {
+      hero_subtitle: "Qwen (Tongyi Qianwen) • 100% Offline • 10 days",
+      qwen_title: "Anti-AI Qwen Academy: Deepfake Specialist",
+      guide_btn: "10-Day Plan",
+      concept1: "👁️ Visual Artifacts", concept2: "🔊 Audio Synth", concept3: "📊 Data Curation", concept4: "🛡️ Safety Eval",
+      tab_course: "🎓 Course", tab_practice: "🛡️ Practice", tab_library: "📚 Library", tab_progress: "📅 Progress",
+      cert_conditions: "🏆 CERTIFICATE REQUIREMENTS",
+      cond1_sub: "Deepfake + Qwen formats", cond2_sub: "No mistakes", cond3: "Portfolio", cond3_sub: "5 cases in Qwen formats",
+      cert_warning: "⚠️ Perfect results → Contributor Pipeline access",
+      progress_title: "📊 Progress", lessons_done: "Lessons completed",
+      reset_btn: "🔄 Reset", reset_warning: "⚠️ All data will be deleted",
+      cert_heading: "🎓 CERTIFICATE",
+      cert_course: "Course: ",
+      cert_confirms: "This certifies that",
+      cert_who: "Certified Deepfake Detection Specialist",
+      cert_completed: "has successfully completed the synthetic content verification course for Qwen pipelines",
+      cert_issuer: "Issuer:", cert_pipeline: "Pipeline:", cert_compliance: "Compliance:", cert_date_label: "Date:",
+      cert_download: "💾 JSON", cert_qwen_export: "📤 Qwen Format", cert_print: "🖨️ Print",
+      cert_badge: "Qwen Deepfake Specialist", cert_practice: "🛡️ Practice",
+      cert_validate_title: "🔍 Verify Certificate", cert_validate_btn: "✅ Check",
+      cert_security: "🔒 Offline • SHA-256 • Qwen-compatible",
+      practice_title: "🛡️ Practice: Qwen Deepfake Cases",
+      practice_subtitle: "Synthetic content analysis • Qwen reporting formats",
+      library_title: "📚 Qwen Deepfake Specialist Library",
+      library_subtitle: "Pipelines, data formats, tools, materials",
+      why_qwen_title: "🎯 Why Qwen needs Deepfake Detection Specialists",
+      why_qwen_desc: "Qwen (Tongyi Qianwen) develops multimodal models (Qwen-VL, Qwen-Audio, Qwen2.5-Multimodal). Safe operation requires specialists covering these tasks:",
+      pipe1_desc: "Filtering synthetic/manipulative content from training datasets",
+      pipe2_desc: "Checking user media requests for deepfakes before model input",
+      pipe3_desc: "Testing Qwen-VL/Audio robustness against adversarial deepfakes",
+      pipe4_desc: "Labeling model output quality/reliability for multimodal queries",
+      pipe5_desc: "Auditing compliance with Tongyi / Alibaba AI Principles",
+      warning_title: "💡 Important:",
+      why_warning: "These specialists don't write model code, but directly influence safety, quality and regulatory compliance. Qwen accepts them via official data annotation, safety review and multimodal eval pipelines.",
+      flow_title: "🔄 How specialists integrate into Qwen workflow",
+      flow_step1: "User media request",
+      flow_step2: "Moderation / Deepfake Filter",
+      flow_step3: "Qwen-VL / Qwen-Audio processing",
+      flow_step4: "Eval / Red-Team",
+      flow_step5: "RLHF / Fine-tuning",
+      flow_step6: "Safety policies / Compliance",
+      collab_title: "🔗 Collaboration formats with Qwen/Alibaba Cloud",
+      collab1: "Via Alibaba Cloud Data Service",
+      collab2: "Via Tongyi Community & GitHub",
+      collab3: "For partners integrating Qwen API",
+      collab4: "Via annotation platforms working with Qwen data",
+      materials_title: "📦 Ready materials (Qwen-specific)",
+      materials_note: "All materials work offline, no telemetry, mobile-compatible.",
+      skills_section: "🛠️ Graduate Skills",
+      hard_skills: "🔹 Hard Skills", soft_skills: "🔹 Soft Skills",
+      hard1: "Detect 15+ deepfake artifacts", hard2: "Qwen-Audio spectrogram analysis",
+      hard3: "EXIF/Metadata analysis offline", hard4: "Formats: JSON, CSV, Markdown (Qwen)",
+      hard5: "RLHF labeling and safety eval",
+      soft1: "Pixel-level attention to detail", soft2: "Critical thinking: 'trust but verify'",
+      soft3: "Working with manipulative content (ethics)", soft4: "Clear documentation for ML engineers",
+      soft5: "Compliance mindset: Tongyi AI Principles",
+      jobs_title: "💼 Where do Qwen Deepfake Specialists work?",
+      salary_info: "Starting salaries: $500-2000/mo • Remote • Flexible",
+      progress_path: "📈 Path to Qwen Deepfake Specialist",
+      days1_3_desc: "Qwen-VL architecture, deepfake types, visual artifacts",
+      days4_6_desc: "Audio synthesis, EXIF, RLHF labeling, Qwen formats",
+      days7_8_desc: "Red-teaming, moderation, complex analysis",
+      day9_desc: "Portfolio in Qwen formats",
+      day10_desc: "FINAL EXAM (10/10)",
+      output_title: "📦 Qwen Reporting Formats",
+      support_title: "🤝 SUPPORT THE PROJECT 💙", support_desc: "App is free. Always will be.<br>Support development:", copy_phone: "📋 Copy", catalog_link: "🌟 Anti-AI Shield Catalog",
+      footer: "Anti-AI Qwen Academy | 100% Offline | Deepfake Detection | Qwen Pipelines",
+      guide_title: "🚀 10-Day Plan", guide_start: "Let's go!",
+      cert_valid: "✅ Certificate is valid", cert_invalid: "❌ Certificate not found",
+      voice_on: "Voice enabled", voice_off: "Voice disabled", lang_changed: "Language changed",
+      progress_reset: "Progress reset", cert_downloaded: "Certificate downloaded", portfolio_downloaded: "Qwen Portfolio downloaded",
+      print_cert: "Printing...", copied: "Copied",
+      too_short: "⚠️ Too short! Minimum 10 characters.",
+      correct: "✅ Correct! Lesson completed!", incorrect: "❌ Not quite. Check the hint.",
+      exam_perfect: "🎉 PERFECT! 10 out of 10", exam_failed: "😔 Not passed. {score}/10. Need 10.",
+      cert_locked: "Get certificate first (10/10).", cert_imported: "✅ Certificate imported!",
+      cert_bad_sig: "❌ Invalid signature.", cert_file_error: "❌ File error.",
+      reset_confirm: "⚠️ Reset all progress?", reset_done: "✅ Reset!",
+      day_label: "Day", task_label: "Task", answer_placeholder: "Your answer...",
+      check_btn: "Check", hint_btn: "Hint", answer_btn: "Answer",
+      locked_msg: "Complete previous lesson first", final_exam: "FINAL EXAM",
+      exam_instr: "10 questions. Need <b>10 correct</b> for Contributor Pipeline access.",
+      question: "Question", true_opt: "True", false_opt: "False",
+      submit_exam: "Submit Exam", out_of: "out of", cert_unlocked: "Contributor Pipeline access unlocked ↓",
+      retry_btn: "Try again", too_short_practice: "Too short",
+      practice_correct: "Correct! You found the key issue.",
+      practice_incorrect: "Try again. Look for artifacts, desync or synthesis signs.",
+      invalid_format: "Invalid format (QWEN-DEEPFAKE-XXXXXX)", issued_label: "Issued"
+    }
+  };
+
+  // ========== 🧠 STATE ==========
+  let currentLang = localStorage.getItem('qwen_df_lang') || 'ru';
+  let courseProgress = (() => { try { const s = JSON.parse(localStorage.getItem('qwen_df_progress')); return Array.isArray(s) && s.length === 10 ? s : Array(10).fill(false); } catch(e) { return Array(10).fill(false); } })();
+  let examScore = parseInt(localStorage.getItem('qwen_df_exam')) || 0;
+  let certData = JSON.parse(localStorage.getItem('qwen_df_certificate')) || null;
+  let voiceEnabled = localStorage.getItem('qwen_df_voice') === 'true';
+  
+  const synth = window.speechSynthesis;
+  let voices = [], currentVoice = null, lastSpeakTime = 0, voicesLoaded = false, voiceRetryCount = 0;
+
+  function saveState() {
+    try {
+      localStorage.setItem('qwen_df_lang', currentLang);
+      localStorage.setItem('qwen_df_progress', JSON.stringify(courseProgress));
+      localStorage.setItem('qwen_df_exam', examScore.toString());
+      localStorage.setItem('qwen_df_certificate', JSON.stringify(certData));
+      localStorage.setItem('qwen_df_voice', voiceEnabled.toString());
+    } catch(e) { console.warn('Storage save failed:', e); }
+  }
+
+  // ========== 🔊 SPEECH SYNTHESIS ==========
+  function isSpeechSupported() { 
+    return typeof window !== 'undefined' && 'speechSynthesis' in window && 'SpeechSynthesisUtterance' in window;
+  }
+  
+  function loadVoicesWithRetry() {
+    if (!isSpeechSupported() || !synth) return;
+    try {
+      voices = synth.getVoices();
+      if (voices.length > 0) {
+        voicesLoaded = true;
+        selectVoice();
+      } else if (voiceRetryCount < 5) {
+        voiceRetryCount++;
+        setTimeout(loadVoicesWithRetry, 500 * voiceRetryCount);
+      }
+    } catch(e) { console.warn('Voice load error:', e); }
+  }
+  
+  function selectVoice() { 
+    if (!voices.length) return;
+    const p = currentLang === 'ru' ? 'ru' : 'en'; 
+    currentVoice = voices.find(v => v.lang === `${p}-${p.toUpperCase()}`) || 
+                   voices.find(v => v.lang.startsWith(p)) || 
+                   voices.find(v => v.default) || 
+                   voices[0]; 
+  }
+  
+  if (synth?.onvoiceschanged !== undefined) {
+    synth.onvoiceschanged = () => { voices = synth.getVoices(); if (voices.length > 0) { voicesLoaded = true; selectVoice(); } };
+  }
+  loadVoicesWithRetry();
+  setTimeout(loadVoicesWithRetry, 1000);
+  setTimeout(loadVoicesWithRetry, 3000);
+
+  function speak(text, priority = false) {
+    if (!voiceEnabled || !isSpeechSupported() || !text) return;
+    if (!voicesLoaded && synth) {
+      const v = synth.getVoices();
+      if (v.length > 0) { voices = v; voicesLoaded = true; selectVoice(); }
+    }
+    if (!voicesLoaded) return;
+    
+    const now = Date.now(); 
+    if (now - lastSpeakTime < 800 && !priority) return; 
+    lastSpeakTime = now;
+    
+    if (priority && synth) { try { synth.cancel(); } catch(e) {} }
+    
+    try { 
+      const u = new SpeechSynthesisUtterance(text); 
+      u.voice = currentVoice; 
+      u.rate = 0.95; 
+      u.lang = currentLang === 'ru' ? 'ru-RU' : 'en-US';
+      u.onerror = (e) => console.warn('Speech error:', e.error);
+      if (synth) synth.speak(u); 
+    } catch(e) { console.warn('Speech speak error:', e); }
+  }
+  
+  function updateVoiceBtn() { 
+    const btn = document.getElementById('voiceBtn'); 
+    if (btn) { 
+      btn.textContent = voiceEnabled ? '🔊' : '🔇'; 
+      btn.classList.toggle('active', voiceEnabled); 
+      btn.setAttribute('aria-pressed', voiceEnabled);
+    } 
+  }
+
+  // ========== 🎨 APP ==========
+  const app = {
+    t: function(key, params = {}) { 
+      let text = i18n[currentLang]?.[key] || i18n.ru[key] || key; 
+      Object.keys(params).forEach(p => text = text.replace(`{${p}}`, params[p])); 
+      return text; 
+    },
+    
+    getBilingual: function(content) {
+      if (typeof content === 'object' && content.ru && content.en) {
+        return content[currentLang] || content.ru;
+      }
+      return content;
+    },
+    
+    applyLang: function() {
+      document.querySelectorAll('[data-i18n]').forEach(el => { 
+        const key = el.getAttribute('data-i18n'); 
+        if (key && this.t(key)) el.textContent = this.t(key); 
+      });
+      document.getElementById('langBtn').textContent = currentLang === 'ru' ? '🌐 EN' : '🌐 RU';
+      const tm = { course: 'tab_course', practice: 'tab_practice', library: 'tab_library', progress: 'tab_progress' };
+      document.querySelectorAll('.tab-btn').forEach(b => { 
+        const k = tm[b.dataset.tab]; 
+        if (k && this.t(k)) b.textContent = this.t(k); 
+      });
+      updateVoiceBtn(); 
+      this.renderCourse(); 
+      this.renderPractice(); 
+      speak(this.t('lang_changed'), true);
+    },
+    
+    toggleLang: function() { 
+      currentLang = currentLang === 'ru' ? 'en' : 'ru'; 
+      saveState(); 
+      this.applyLang(); 
+    },
+    
+    switchTab: function(id) {
+      document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      document.querySelector(`.tab-btn[data-tab="${id}"]`).classList.add('active');
+    },
+    
+    // 🔹 DOM кэширование
+    _domCache: {},
+    _getEl: function(id) {
+      if (!this._domCache[id]) this._domCache[id] = document.getElementById(id);
+      return this._domCache[id];
+    },
+    
+    renderCourse: function() {
+      const c = this._getEl('lessonsContainer'); if (!c) return;
+      const completed = courseProgress.filter(x => x).length;
+      const pEl = this._getEl('courseProgress'), bEl = this._getEl('courseBar');
+      if (pEl) pEl.textContent = `${completed}/10`; if (bEl) bEl.style.width = `${completed * 10}%`;
+      
+      const certBox = this._getEl('certificateBox');
+      if (certBox) {
+        if (courseProgress[9] && examScore === 10) {
+          if (!certData) {
+            const id = 'QWEN-DEEPFAKE-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            certData = { 
+              id, course: "Qwen Deepfake Detection Specialist", 
+              pipeline: "qwen-multimodal-safety", version: "qwen-v2.5", 
+              date: new Date().toISOString().split('T')[0], 
+              issuer: "Anti-AI Qwen Academy", 
+              compliance: ["tongyi_safety_v2", "iso_iec_42001"], 
+              sig: generateCertSignature(id, "Anti-AI Qwen Academy"), 
+              skills: ["vl_eval", "audio_synth_detect", "rlhf_annotation", "redteam_logging", "compliance"] 
+            };
+            saveState();
+          }
+          certBox.style.display = 'block';
+          this._getEl('certIdDisplay').textContent = certData.id;
+          this._getEl('certDateDisplay').textContent = certData.date;
+          this._getEl('certCourseDisplay').textContent = certData.course;
+          this._getEl('certIssuerDisplay').textContent = certData.issuer;
+          this._getEl('certPipelineDisplay').textContent = certData.pipeline;
+          this._getEl('certComplianceDisplay').textContent = certData.compliance.join(', ');
+        } else { certBox.style.display = 'none'; }
+      }
+
+      // 🔹 DocumentFragment для оптимизации
+      const fragment = document.createDocumentFragment();
+      QWEN_COURSE.forEach((l, i) => {
+        const done = courseProgress[i], locked = i > 0 && !courseProgress[i-1] && !done, active = !locked && !done;
+        let st, sc; 
+        if (done) { st = currentLang === 'ru' ? '✅ ПРОЙДЕН' : '✅ DONE'; sc = 'completed'; } 
+        else if (active) { st = currentLang === 'ru' ? '🔓 АКТИВЕН' : '🔓 ACTIVE'; sc = 'active'; } 
+        else { st = currentLang === 'ru' ? '🔒 ЗАКРЫТ' : '🔒 LOCKED'; sc = 'locked'; }
+        
+        const card = document.createElement('div');
+        card.className = `lesson-card ${done?'completed':active?'active':'locked'}`;
+        card.innerHTML = `<div class="lesson-header"><span class="lesson-title">${this.t('day_label')} ${l.day}: ${this.getBilingual(l.title)}</span><span class="lesson-status ${sc}">${st}</span></div>`;
+        
+        if (!locked) {
+          card.innerHTML += `<div class="lesson-content">${this.getBilingual(l.content)}</div>`;
+          if (l.case) card.innerHTML += `<div class="case-text">${this.getBilingual(l.case)}</div>`;
+          if (l.qwenFormat) card.innerHTML += `<div class="qwen-format">📦 Qwen Format: ${l.qwenFormat}</div>`;
+          card.innerHTML += `<div class="lesson-task"><b>🎯 ${this.t('task_label')}:</b> ${this.getBilingual(l.task)}</div>
+            <textarea class="lesson-input" id="task-${i}" placeholder="${this.t('answer_placeholder')}" ${done?'disabled':''}></textarea>
+            <div class="btn-group">
+              <button class="btn secondary" onclick="app.checkLesson(${i})" ${done?'disabled':''}>✅ ${this.t('check_btn')}</button>
+              <button class="btn secondary" onclick="app.showHint(${i})">💡 ${this.t('hint_btn')}</button>
+              <button class="btn secondary" onclick="app.showAnswer(${i})">👁️ ${this.t('answer_btn')}</button>
+            </div>
+            <div id="hint-${i}" style="display:none; margin-top:8px; padding:10px; background:rgba(97,94,240,0.1); border-radius:6px; font-size:0.8rem; color:var(--accent);"></div>
+            <div id="answer-${i}" style="display:none; margin-top:8px; padding:10px; background:rgba(97,94,240,0.1); border-radius:6px; font-size:0.8rem; color:var(--qwen);"></div>
+            <div class="lesson-feedback" id="feedback-${i}"></div>`;
+        } else { card.innerHTML += `<p style="color:var(--muted); font-size:0.85rem;">🔒 ${this.t('locked_msg')}</p>`; }
+        fragment.appendChild(card);
+      });
+      c.innerHTML = ''; c.appendChild(fragment);
+      
+      if (courseProgress.slice(0,9).every(x=>x) && !courseProgress[9] && examScore !== 10) this.renderExam();
+    },
+    
+    checkLesson: function(i) {
+      const inp = this._getEl(`task-${i}`)?.value.trim(), fb = this._getEl(`feedback-${i}`);
+      if (!inp || !fb) return;
+      if (inp.length < 10) { fb.className='lesson-feedback error'; fb.style.display='block'; fb.innerHTML=`⚠️ <b>${this.t('too_short')}</b>`; return; }
+      const ok = QWEN_COURSE[i].check(inp); fb.style.display='block';
+      if (ok) { courseProgress[i]=true; saveState(); this.renderCourse(); fb.className='lesson-feedback success'; fb.innerHTML=this.t('correct'); speak(this.t('correct'), true); }
+      else { fb.className='lesson-feedback error'; fb.innerHTML=this.t('incorrect'); speak(this.t('incorrect'), true); }
+    },
+    
+    showHint: function(i) { 
+      const h=this._getEl(`hint-${i}`); if(!h)return; 
+      h.style.display=h.style.display==='none'?'block':'none'; 
+      h.textContent='💡 '+this.getBilingual(QWEN_COURSE[i].hint); 
+    },
+    
+    showAnswer: function(i) { 
+      const a=this._getEl(`answer-${i}`); if(!a)return; 
+      a.style.display=a.style.display==='none'?'block':'none'; 
+      a.textContent='📚 '+this.t('answer_btn')+': '+this.getBilingual(QWEN_COURSE[i].hint); 
+    },
+    
+    renderExam: function() {
+      if (courseProgress[9]) return; const l=QWEN_COURSE[9], c=this._getEl('examContainer'); if(!c)return;
+      let h = `<div class="card" style="border-color:var(--qwen); background:rgba(97,94,240,0.05); margin-top:16px;">
+        <h3>🏆 ${this.t('final_exam')}</h3><p style="margin:12px 0;">${this.t('exam_instr')}</p>`;
+      l.examQuestions.forEach((q, i) => {
+        h += `<div class="exam-question" id="eq${i}"><p style="margin-bottom:8px;"><b>${this.t('question')} ${i+1}:</b> ${this.getBilingual(q.q)}</p>
+          <div class="exam-options">
+            <label><input type="radio" name="exam${i}" value="true"> ✅ ${this.t('true_opt')}</label>
+            <label><input type="radio" name="exam${i}" value="false"> ❌ ${this.t('false_opt')}</label>
+          </div></div>`;
+      });
+      h += `<button class="btn" onclick="app.submitExam()" style="width:100%; margin-top:16px; font-size:1.1rem;">📝 ${this.t('submit_exam')}</button>
+        <div id="examResult" style="margin-top:16px; display:none;"></div></div>`;
+      c.innerHTML = h;
+    },
+    
+    submitExam: function() {
+      let correct = 0; QWEN_COURSE[9].examQuestions.forEach((q, i) => {
+        const sel = document.querySelector(`input[name="exam${i}"]:checked`);
+        if (sel) { const ok = (sel.value==='true') === q.correct; if(ok)correct++; const e=document.getElementById(`eq${i}`); if(e){e.classList.add('answered'); e.style.borderLeft=`3px solid ${ok?'var(--success)':'var(--danger)'}`; } }
+      });
+      examScore = correct; saveState();
+      const res = this._getEl('examResult'); res.style.display='block';
+      if (correct===10) {
+        courseProgress[9]=true; saveState(); this.renderCourse();
+        res.innerHTML = `<div style="text-align:center;padding:24px;background:rgba(46,204,113,0.15);border-radius:12px;border:2px solid var(--success);">
+          <h3 style="color:var(--success);font-size:1.8rem;">🎉 ${this.t('exam_perfect')}</h3>
+          <p style="font-size:1.3rem;margin:16px 0;"><b>10 ${this.t('out_of')} 10</b></p>
+          <p style="font-size:1.1rem;color:var(--gold);">🏆 ${this.t('cert_unlocked')}</p></div>`;
+        speak(this.t('exam_perfect'), true);
+      } else {
+        res.innerHTML = `<div style="text-align:center;padding:24px;background:rgba(231,76,60,0.15);border-radius:12px;border:2px solid var(--danger);">
+          <h3 style="color:var(--danger);font-size:1.5rem;">😔 ${this.t('exam_failed', {score:correct})}</h3>
+          <button class="btn secondary" onclick="app.renderExam()" style="margin-top:12px;">🔄 ${this.t('retry_btn')}</button></div>`;
+        speak(this.t('exam_failed', {score:correct}), true);
+      }
+    },
+    
+    renderPractice: function() {
+      const box=this._getEl('practiceContainer'); if(!box)return; 
+      const fragment = document.createDocumentFragment();
+      PRACTICE_CASES.forEach((c, i) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<h3>${this.getBilingual(c.title)}</h3><div class="case-text">${this.getBilingual(c.text)}</div>
+          <p style="font-size:0.8rem;color:var(--muted);margin:8px 0;">${this.getBilingual(c.task)}</p>
+          <input type="text" id="prac-${i}" placeholder="${this.t('answer_placeholder')}">
+          <button class="btn secondary" onclick="app.checkPractice(${i})" style="margin-top:8px;font-size:0.8rem;">🔍 ${this.t('check_btn')}</button>
+          <div id="prac-fb-${i}" style="margin-top:8px;font-size:0.8rem;display:none;"></div>`;
+        fragment.appendChild(card);
+      });
+      box.innerHTML = ''; box.appendChild(fragment);
+    },
+    
+    checkPractice: function(i) {
+      const val=this._getEl(`prac-${i}`)?.value.trim(), fb=this._getEl(`prac-fb-${i}`); if(!val||!fb)return; fb.style.display='block';
+      if(val.length<5){fb.innerHTML=`⚠️ ${this.t('too_short_practice')}`;fb.style.color='var(--warning)';return;}
+      const ok=PRACTICE_CASES[i].check(val); fb.innerHTML=ok?`✅ ${this.t('practice_correct')}`:`❌ ${this.t('practice_incorrect')}`;
+      fb.style.color=ok?'var(--success)':'var(--danger)'; if(ok)speak('Correct!', true);
+    },
+    
+    resetProgress: function() {
+      if(confirm(this.t('reset_confirm'))) {
+        localStorage.removeItem('qwen_df_progress'); localStorage.removeItem('qwen_df_exam'); localStorage.removeItem('qwen_df_certificate');
+        courseProgress=Array(10).fill(false); examScore=0; certData=null; saveState(); this.renderCourse();
+        speak(this.t('progress_reset'), true); alert(this.t('reset_done'));
+      }
+    },
+    
+    // 🔹 Blob URL cleanup
+    exportCertificate: function() {
+      if(!certData){alert(this.t('cert_locked'));return;}
+      const b=new Blob([JSON.stringify(certData,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(b);
+      const a=document.createElement('a');
+      a.href=url; a.download=`certificate-${certData.id}.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);  // ✅ Очистка памяти
+      speak(this.t('cert_downloaded'), true);
+    },
+
+    exportQwenPortfolio: function() {
+      if(!certData){alert(this.t('cert_locked'));return;}
+      const qwenData = {
+        metadata: { cert_id: certData.id, pipeline: certData.pipeline, version: certData.version, date: certData.date, issuer: certData.issuer, compliance: certData.compliance },
+        cases: [
+          {id:"q1",type:"vl",verdict:"synthetic",confidence:0.87,format:"qwen_vl_eval.json"},
+          {id:"q2",type:"audio",verdict:"synthetic_voice",confidence:0.92,format:"qwen_audio_report.csv"},
+          {id:"q3",type:"redteam",severity:"HIGH",format:"qwen_redteam_log.md"},
+          {id:"q4",type:"rlhf",label:"INCORRECT",format:"qwen_rlhf_pair.json"},
+          {id:"q5",type:"compliance",status:"PASS",format:"qwen_compliance_check.pdf"}
+        ],
+        skills: certData.skills,
+        signature: generateCertSignature(certData.id, certData.issuer)
+      };
+      const b=new Blob([JSON.stringify(qwenData,null,2)],{type:'application/json'});
+      const url=URL.createObjectURL(b);
+      const a=document.createElement('a');
+      a.href=url; a.download=`qwen-portfolio-${certData.id}.json`;
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      URL.revokeObjectURL(url);  // ✅ Очистка памяти
+      speak(this.t('portfolio_downloaded'), true);
+    },
+    
+    printCertificate: function() {
+      if(!certData)return; 
+      const w=window.open('','_blank','width=900,height=700'); 
+      if(!w){alert('❌ Popup blocked.');return;}
+      try {
+        w.document.write(`<!DOCTYPE html><html><head><title>Certificate ${certData.id}</title><style>body{margin:0;padding:40px;font-family:system-ui;background:#0a0c14;color:#e6eaf0;min-height:100vh;display:flex;justify-content:center;align-items:center;}.cert{background:linear-gradient(135deg,rgba(97,94,240,0.15),rgba(0,212,255,0.1));border:4px solid #615ef0;border-radius:20px;padding:50px;text-align:center;max-width:800px;}h1{color:#615ef0;font-size:2.5rem;margin-bottom:20px;}.seal{width:100px;height:100px;border:4px solid #615ef0;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:30px auto;font-size:3rem;background:rgba(97,94,240,0.1);}.badge{display:inline-block;padding:10px 24px;background:linear-gradient(135deg,#615ef0,#8a85f5);color:#fff;border-radius:30px;font-weight:bold;margin:20px 0;}.id{font-family:monospace;background:rgba(0,0,0,0.4);padding:8px 16px;border-radius:8px;color:#615ef0;display:inline-block;margin:12px 0;}.meta{color:#00d4ff;font-size:0.9rem;margin:8px 0;}p{font-size:1.1rem;margin:10px 0;}@media print{body{background:white;color:black;}.cert{border-color:#615ef0;background:white;}}</style></head><body><div class="cert"><div class="seal">🛡️</div><h1>🎓 CERTIFICATE</h1><p style="font-size:1.3rem;margin:16px 0;"><b>${certData.issuer}</b></p><p>This certifies that</p><p style="font-size:1.2rem;color:#615ef0;margin:8px 0;font-weight:bold;">${certData.course}</p><p>has successfully completed the synthetic content verification course for Qwen pipelines with perfect score</p><div class="id">${certData.id}</div><p class="meta">Pipeline: ${certData.pipeline} | Version: ${certData.version}</p><p class="meta">Compliance: ${certData.compliance.join(', ')}</p><p class="meta">Date: ${certData.date} | Issuer: ${certData.issuer}</p><div class="badge">Qwen Deepfake Specialist</div></div><script>window.onload=function(){window.print();}<\/script></body></html>`);
+        w.document.close();
+        w.onafterprint = function() { try { w.close(); } catch(e) {} };
+        setTimeout(() => { try { if (!w.closed) w.close(); } catch(e) {} }, 10000);
+        speak(this.t('print_cert'), true);
+      } catch(e) { console.error('Print error:', e); w.close(); }
+    },
+    
+    validateCertificate: function() {
+      const inp=this._getEl('validateInput')?.value.trim().toUpperCase(), res=this._getEl('validateResult'); if(!res)return; res.style.display='block';
+      if(!inp||!/^QWEN-DEEPFAKE-[A-Z0-9]{6}$/.test(inp)){res.textContent=`❌ ${this.t('invalid_format')}`;res.style.color='var(--danger)';return;}
+      
+      // 🔹 Полная валидация: ID + issuer + signature
+      if(certData && inp === certData.id) {
+        const sigValid = verifyCertSignature(certData.id, certData.issuer, certData.sig);
+        if(sigValid) {
+          res.innerHTML=`<span style="color:var(--success);">✅ ${this.t('cert_valid')}<br><small>${this.t('issued_label')}: ${certData.date}</small></span>`;
+          res.style.color='var(--success)';
+          speak(this.t('cert_valid'), true);
+        } else {
+          res.textContent=`❌ ${this.t('cert_bad_sig')}`;
+          res.style.color='var(--danger)';
+          speak(this.t('cert_bad_sig'), true);
+        }
+      } else {
+        res.textContent=`❌ ${this.t('cert_invalid')}`;
+        res.style.color='var(--danger)';
+        speak(this.t('cert_invalid'), true);
+      }
+    },
+    
+    copyPhone: function() {
+      const p='89202275676'; 
+      if(navigator.clipboard?.writeText) {
+        navigator.clipboard.writeText(p).then(()=>speak(this.t('copied'), true)).catch(()=>app._fallbackCopy(p));
+      } else {
+        app._fallbackCopy(p);
+      }
+    },
+    
+    _fallbackCopy: function(text) {
+      try {
+        const t=document.createElement('textarea');
+        t.value=text; t.setAttribute('readonly','');
+        t.style.cssText='position:fixed;top:-9999px;left:-9999px;';
+        document.body.appendChild(t); t.select();
+        document.execCommand('copy'); document.body.removeChild(t);
+        speak(this.t('copied'), true);
+      } catch(e) { alert('Copy failed'); }
+    },
+    
+    openModal: function(id) { this._getEl(id)?.classList.add('open'); },
+    closeModal: function(id) { this._getEl(id)?.classList.remove('open'); },
+    
+    toggleVoice: function() {
+      if(!isSpeechSupported()){
+        alert(currentLang==='ru'?'⚠️ Озвучка не поддерживается. Попробуйте Chrome/Edge.':'⚠️ Speech not supported. Try Chrome/Edge.');
+        return;
+      }
+      voiceEnabled=!voiceEnabled; saveState(); updateVoiceBtn(); 
+      speak(voiceEnabled?this.t('voice_on'):this.t('voice_off'), true);
+    }
+  };
+
+  window.app = app;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    app.applyLang(); updateVoiceBtn(); app.renderCourse(); app.renderPractice();
+    document.querySelectorAll('.tab-btn').forEach(b => b.addEventListener('click', (e) => { e.preventDefault(); app.switchTab(b.dataset.tab); }));
+    const vBtn=document.getElementById('voiceBtn'); if(vBtn)vBtn.addEventListener('click', (e)=>{e.stopPropagation();app.toggleVoice();});
+    
+    let speechUnlocked=false; 
+    function unlock(){
+      if(speechUnlocked||!isSpeechSupported())return;
+      try{
+        const u=new SpeechSynthesisUtterance('');u.volume=0;
+        if(synth){synth.speak(u);synth.cancel();}
+        speechUnlocked=true;
+      }catch(e){}
+    }
+    ['click','touchstart'].forEach(evt=>document.addEventListener(evt,unlock,{once:true,passive:true}));
+    setTimeout(()=>{if(!voicesLoaded&&isSpeechSupported()){loadVoicesWithRetry();}},2000);
+  });
+})();
+</script>
+</body>
+</html>
